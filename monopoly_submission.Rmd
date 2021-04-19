@@ -62,6 +62,11 @@ MISCELLANEOUS: Money can be loaned to a player through only the bank mortgaging 
 # creating board
 gameboard = data.frame(space = 1:40, title = c("Go", "Mediterranean Avenue", "Community Chest", "Oriental Avenue", "Income Tax", "Reading Railroad", "Oriental Avenue", "Chance", "Vermont Avenue", "Connecticut Avenue", "Jail", "St Charles Place", "Electric Company", "States Avenue", "Virginia Avenue", "Pennsylvania Avenue", "St James Place", "Community Chest", "Tennesse Avenue", "New York Avenue", "Free Parking", "Kentucky Avenue", "Chance", "Indiana Avenue", "Illinois Avenue", "B & O Railroad", "Atlantic Avenue", "Ventor Avenue", "Water Works", "Marvin Gardens", "Go To Jail", "Pacific Avenue", "North Carolina Avenue", "Community Chest", "Pennsylvania Avenue", "Short Line", "Chance", "Park Place", "Luxury Tax", "Boardwalk"), stringsAsFactors = FALSE)
 
+#chance deck 
+chancedeck = data.frame(index=1:16, card=c("Advance to Go", "Advance to Illinois Ave", "Advance to St. Charles Place", "Advance token to the nearest Utility","Advance to the nearest Railroad","Bank pays you dividend of $50", "Get out of Jail Free","Go Back Three {3} Spaces","Go to Jail","Make general repairs on all your property","Pay poor tax of $15", "Take a trip to Reading Railroad", "Take a walk on the Boardwalk", "You have been elected Chairman of the Board","Your building {and} loan matures","You have won a crossword competition"))
+
+#community deck 
+chancedeck = data.frame(index=1:17, card=c("Advance to Go", "Bank error in your favor","Doctor's fees", "From sale of stock you get $50", "Get Out of Jail Free", "Go to Jail", "Grand Opera Night","Holiday {Xmas} Fund matures", "Income tax refund","It is your birthday", "Life insurance matures","Hospital Fees", "School fees", "Receive $25 consultancy fee", "You are assessed for street repairs","You have won second prize in a beauty contest","You inherit $100"))
 
 # dice function
 dice = function(verbose = FALSE){
