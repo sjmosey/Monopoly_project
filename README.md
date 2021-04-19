@@ -16,3 +16,7 @@ dice = function(verbose = FALSE){
 ```
 
 https://www.youtube.com/watch?v=INVFh0P0IXU
+
+Community chest/chance/title deed references
+https://www.pinterest.com/pin/613263674237507441/
+https://fliphtml5.com/bvlg/brca/basic
