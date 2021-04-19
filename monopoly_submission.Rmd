@@ -1,0 +1,86 @@
+---
+title: "Monopoly Test"
+author: "Jill Kittelson"
+date: "4/18/2021"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Expected Submission: You will generate a well-written R Markdown report that addresses the following prompts. This R Markdown report should source your analysis code and only display top-level, abstracted code _if/when appropriate_. Choices made during the analysis project should be described and justified in the report. You will present on your results during the final exam period for the semester. The written report (knitted file), presentation file, and your analysis code should be submitted to D2L by Tuesday, May 14 at 12:15pm. 
+
+**General advice:** Get started early. If you wait to the last minute, it will not go well. For this project, you may find yourself spending a reasonable amount of time _searching_ for help.
+
+1. _Rules!_ Monopoly has several rules related to movement around the game board. Movement is affected by standard dice rolls, special conditions for some dice rolls, and game cards. Find and summarize these rules. 
+
+SET UP: Each player is given $1500.
+THE BANK: The bank holds Title Deeds, houses, and hotels before purchasing. After a purchase the player who bought them now holds them. The bank loans money and it collects taxes, fines, interest, and property prices which they sell and auction. The bank never runs out of money.
+
+THE PLAY: Starting with the Banker, each player in turn throws the dice, the highest number goes first, the play passes to the left. All tokens start on “GO.” The tokens remain where left until the person plays again. There is no limit to how many tokens can be on one space. Follow directions on the space which the player lands on. If doubles are rolled the player should move and follow the rules of the space they landed on before repeating the same steps. If doubles are rolled three times in a row the player must go directly to jail.
+
+GO: Each time a players token passes go by rolling dice or drawing a card the bank pays them $200. If a player passes go and then on the same dice roll draws a community chest or chance card they collect the $200 twice.
+
+BUYING PROPERTY: If a player lands on unowned property they may buy it from the bank for the specified price. If they chose to buy it, they receive the Title Deed which they must place face up in front of them. If they choose not to buy it the bank auctions it to everyone playing. Bidding may start at any price and the winner must pay the amount bid in cash.
+
+PAYING RENT: If a player lands on a property owned by another player they must pay the owner the listed rice on the space’s Title Deed card. If the property is mortgaged no rent can be collected. When the property is mortgaged the Title Deed card is placed face down in front of the owner. A player may not collect rent of they forget to ask for it before the second player following rolls the dice.
+If a player hold all the Title Deed cards in a color-group they may charge double rent for unimproved properties in that color group. This rule applies to unmortgaged properties in this color group even if another property is mortgaged.
+
+CHANCE AND COMMUNITY CHEST: When a player lands on either of these spaces take the top card from the deck indicated. Follow the instructions then return the card to the bottom of the correct deck. The get out of jail free card is held until used and then returned. If the player decides not to buy it they may sell it to a another player at an agreed price.
+
+INCOME TAX: If a player lands here there are two options. First, they may estimate their tax at $200 and pay the bank, or you may pay the bank 10% of your total worth. This includes all of your cash on hand, printed prices of mortgaged and unmortgaged properties, and the cost of all buildings you own. You must decide which option before you add up your total worth.
+
+JAIL: A player lads in jail when… Their token lands of the “Go to Jail,” they draw a card marked “Go to Jail,” or they roll doubles three times in a row. When you are sent to jail you cannot collect your $200 payment for passing go regardless of where their token is. Their turn ends when they go to jail. If you are not sent to jail and land on that space by ordinary play, you are “Just Visiting” and incur no penalty. 
+To get out of jail a player must either use a get out of jail free card that they possess, purchase a get out of free card from another player and playing it, paying the $50 fine before rolling the dice for the next two turns, or throwing doubles on a roll, if this happens the player moves that number of spaces but does not roll again. If a player does not roll doubles by their third turn, they must pay the $50 fine. They then get thrown out of jail immediately and move forward the number of spaces they rolled.
+While a player is in jail they may still buy and sell property, buy and sell houses and hotels and collect rents.
+
+FREE PARKING: A player who lands here does not receive anything or have any penalty. This is a free space.
+
+HOUSES: If a player owns all the properties in a color group, they may buy houses from the bank and erect them on those properties. The next house must go on an unimproved property in this color group or any other color group the player owns.
+The price paid is shown on the Title Deed cards for the property the player is building the house on. The owner still collects double rent from an opponent who lands on the unimproved properties of their complete color group.
+A player may buy as many houses as the players judgment and financial standing will allow, but they must be played evenly and up to 4 houses per property. This means no color group can have a gap in the number of houses greater than one house in the color group. Likewise, the same rule applies when selling houses back to the bank.
+
+HOTELS: When a player has four houses on each property in a color group they can buy a hotel and erect it on any property of the color group. The player must return the four houses to the bank and pay the price of the hotel on the Title Deed card. Only one hotel is allowed per property.
+BUILDING SHORTAGES: When the bank has no houses to sell, players must wait for another player to sell or return their houses to the bank before building. If there are a limited number of houses/hotels left and two or more players want to buy more than the bank has, the buildings must be sold at auction to the highest bidder.
+
+SELLING PROPERTY: Unimproved properties, railroads, and utilities (not buildings) can be sold to any player as a private transaction for an agreed upon price. But, no property can be sold if there are buildings standing on any of the properties in the color group. The buildings must be sold back to the bank before the sale. They can be sold back at half price in the reverse order of when they were built. Hotels can be sold at once, or one house at a time (one hotel is five houses) in the reverse manner in which they were built.
+
+MORTGAGES: Unimproved properties can be mortgaged through the bank at any time. Before the property can be mortgaged, any buildings must be sold back evenly in the order they were built. The mortgage value is on the Title Deed card.
+No rent can be collected on mortgaged properties/utilities. Rent can be collected on properties in the same color group. In order to lift the mortgage, the owner must pay the bank the amount of mortgage plus 10% interest. When all properties of a color group are no longer mortgaged, the owner may begin buying back houses at full price. When a house is mortgaged the player who bought it is still the owner and no other player can buy it from the bank. However, the player may choose to sell the mortgaged property to another player at any agreed upon price. The new owner can lift the mortgage at once by paying the mortgage plus 10% to the bank. If the mortgaged is not lifted immediately they must pay the bank 10% interest when they buy the property and if they lift the mortgage later, they must pay an additional 10% plus the amount of the mortgage.
+
+BANKRUPTCY: If a player owes more than they can pay to another player or the bank they are considered bankrupt. If the debt is to another player, they must give the player all the value that they have and retires from the game. The player must sell back hotels and houses to the bank and turn mortgaged property over to the player (the new owner must immediately pay 10% of the value of the property). The new owner then must pay the principal or hold the property until a later turn, then lift the mortgage. If the new owner chooses to not pay the mortgage immediately, they will pay the interest again when they chose to pay off the mortgage.
+If the payer owes money to the bank, they can sell buildings and mortgaging property to try to break even. If they remain in debt, they have to turn all assets over to the bank. The bank immediately auctions all property taken except buildings. The player must then retire from the game.
+
+MISCELLANEOUS: Money can be loaned to a player through only the bank mortgaging property. Last person left in the game wins.
+
+
+2. _Let's Get Moving_ Build a system that allows for up to 4 players to move around the game board. As a first attempt, focus on standard dice rolls, ignoring additional rules related to rolling doubles, jail, or special cards. Which properties are landed on most frequently? Create a visualization for this!
+```{r}
+# creating board
+gameboard = data.frame(space = 1:40, title = c("Go", "Mediterranean Avenue", "Community Chest", "Oriental Avenue", "Income Tax", "Reading Railroad", "Oriental Avenue", "Chance", "Vermont Avenue", "Connecticut Avenue", "Jail", "St Charles Place", "Electric Company", "States Avenue", "Virginia Avenue", "Pennsylvania Avenue", "St James Place", "Community Chest", "Tennesse Avenue", "New York Avenue", "Free Parking", "Kentucky Avenue", "Chance", "Indiana Avenue", "Illinois Avenue", "B & O Railroad", "Atlantic Avenue", "Ventor Avenue", "Water Works", "Marvin Gardens", "Go To Jail", "Pacific Avenue", "North Carolina Avenue", "Community Chest", "Pennsylvania Avenue", "Short Line", "Chance", "Park Place", "Luxury Tax", "Boardwalk"), stringsAsFactors = FALSE)
+
+
+# dice function
+dice = function(verbose = FALSE){
+  faces = sample(1:6,2, replace=TRUE)
+  if(faces[1]==faces[2]) doules =TRUE
+  else doubles = FALSE
+  movement = sum(faces)
+  if(verbose) cat("Rolled:", faces[1],faces[2],"\n")
+  return(list(faces=faces, doubles=doubles, movement=movement))
+}
+
+```
+
+
+3. _Double Down_ Improve your system to incorporate going to jail, including the doubles-rolling condition. Which properties are landed on most frequently now? Has this changed dramatically from the previous system (that didn't account for jail)? Again, visualize this!
+
+4. _Take a Chance_ Incorporate the movement cards into your system. You can ignore the effects of non-movement cards, but not their existence! Which properties are landed on most frequently now? Has this changed dramatically from the previous system (that didn't account for Chance)? Again, visualize this!
+
+5. _Play a Game_ Extend your system to allow for up to 4 players to "play" the game. You may choose a reasonable starting board and player money level (so, you don't have to buy properties). Include payments between players, payments to the bank, and payments from the bank (there are several cards that will effect these that you should account for). You do not need to consider mortgaging properties (so a player loses when their liquid cash has run out). How long do games typically last given your starting board and money level? How does this change if money paid to the bank is placed in "Free Parking" and awarded to players landing on that space?
+
+
+
