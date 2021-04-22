@@ -59,24 +59,49 @@ MISCELLANEOUS: Money can be loaned to a player through only the bank mortgaging 
 
 2. _Let's Get Moving_ Build a system that allows for up to 4 players to move around the game board. As a first attempt, focus on standard dice rolls, ignoring additional rules related to rolling doubles, jail, or special cards. Which properties are landed on most frequently? Create a visualization for this!
 ```{r}
-# creating board
-gameboard = data.frame(space = 1:40, title = c("Go", "Mediterranean Avenue", "Community Chest", "Oriental Avenue", "Income Tax", "Reading Railroad", "Oriental Avenue", "Chance", "Vermont Avenue", "Connecticut Avenue", "Jail", "St Charles Place", "Electric Company", "States Avenue", "Virginia Avenue", "Pennsylvania Avenue", "St James Place", "Community Chest", "Tennesse Avenue", "New York Avenue", "Free Parking", "Kentucky Avenue", "Chance", "Indiana Avenue", "Illinois Avenue", "B & O Railroad", "Atlantic Avenue", "Ventor Avenue", "Water Works", "Marvin Gardens", "Go To Jail", "Pacific Avenue", "North Carolina Avenue", "Community Chest", "Pennsylvania Avenue", "Short Line", "Chance", "Park Place", "Luxury Tax", "Boardwalk"), stringsAsFactors = FALSE)
+# creating the board
+tiles <- c("GO", "Mediterranean Avenue", "Community Chest", "Baltic Avenue", "Income Tax", "Reading Railroad", "Oriental Avenue","Chance","Vermont Avenue", "Connecticut Avenue", "Jail", "St. Charles Place", "Electric Company", "States Avenue", "Virginia Avenue","Pennsylvania Railroad", "St. James Place", "Community Chest","Tennessee Avenue","New York Avenue","Free Parking","Kentucky Avenue","Chance","Indiana Avenue","Illinois Avenue","B. & O. Railroad","Atlantic Avenue","Ventnor Avenue", "Water Works", "Marvin Gardens","Go To Jail","Pacific Avenue","North Carolina Avenue", "Community Chest", "Pennsylvania Avenue","Short Line", "Chance","Park Place", "Luxury Tax", "Boardwalk")
 
-#chance deck 
-chancedeck = data.frame(index=1:16, card=c("Advance to Go", "Advance to Illinois Ave", "Advance to St. Charles Place", "Advance token to the nearest Utility","Advance to the nearest Railroad","Bank pays you dividend of $50", "Get out of Jail Free","Go Back Three {3} Spaces","Go to Jail","Make general repairs on all your property","Pay poor tax of $15", "Take a trip to Reading Railroad", "Take a walk on the Boardwalk", "You have been elected Chairman of the Board","Your building {and} loan matures","You have won a crossword competition"))
+board <- data.frame(numeric_tile = 1:40, tiles)
+  
+#creating deck of chance cards
+chance <- c("Advance to go (collect $200).", "Advance to Illinois Ave - If you pass Go, collect $200.", "Advance to St. Charles Place - If you pass Go, collect $200.", "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.", "Bank pays you dividend of $50.", "Get Out of Jail Free.", "Go Back 3 Spaces.", "Go to Jail-Go directly to Jail-Do not pass Go, do not collect $200.", "Make general repairs on all your property-For each house pay $25-For each hotel $100.","Pay poor tax of $15","Take a trip to Reading Railroad–If you pass Go, collect $200.","Take a walk on the Boardwalk–Advance token to Boardwalk","You have been elected Chairman of the Board–Pay each player $50","Your building and loan matures—Collect $150","You have won a crossword competition—Collect $100")
+chancecards <- data.frame(card_number = 1:16, chance)
 
-#community deck 
-chancedeck = data.frame(index=1:17, card=c("Advance to Go", "Bank error in your favor","Doctor's fees", "From sale of stock you get $50", "Get Out of Jail Free", "Go to Jail", "Grand Opera Night","Holiday {Xmas} Fund matures", "Income tax refund","It is your birthday", "Life insurance matures","Hospital Fees", "School fees", "Receive $25 consultancy fee", "You are assessed for street repairs","You have won second prize in a beauty contest","You inherit $100"))
+#creating deck of community ches
+community <- c("Advance to Go (Collect $200).","Bank error in your favor—Collect $200.","Doctor's fee—Pay $50.","From sale of stock you get $50.","Get Out of Jail Free.","Go to Jail–Go directly to jail–Do not pass Go–Do not collect $200.","Grand Opera Night—Collect $50 from every player for opening night seats.","Holiday Fund matures—Receive $100.","Income tax refund–Collect $20.","Life insurance matures–Collect $100.","Pay hospital fees of $100.","Pay school fees of $150.","Receive from services $25.","You are assessed for street repairs–$40 per house–$115 per hotel.","You have won second prize in a beauty contest–Collect $10.","You inherit $100.")
 
-# dice function
-dice = function(verbose = FALSE){
-  faces = sample(1:6,2, replace=TRUE)
-  if(faces[1]==faces[2]) doules =TRUE
-  else doubles = FALSE
-  movement = sum(faces)
-  if(verbose) cat("Rolled:", faces[1],faces[2],"\n")
-  return(list(faces=faces, doubles=doubles, movement=movement))
+chestcards <- data.frame(card_number = 1:16, community)
+
+
+#Dice rolling
+sides <- 1:6
+rollone <- sample(sides, size =1, replace = TRUE)
+rolltwo <- sample(sides, size = 1, replace = TRUE)
+totalroll <- sum(rollone + rolltwo)
+
+
+rollthree <- vector()
+rollfour <- vector()
+rollfive <- vector()
+rollsix <- vector()
+if (rollone == rolltwo) {
+  rollthree <- sample(sides, size = 1, replace = TRUE)
+  rollfour <- sample(sides, size = 1, replace = TRUE)
+  totalroll <- sum(totalroll + rollthree + rollfour)
+  
+  if(rollthree==rollfour) {
+  rollfive <- sample(sides, size = 1, replace = TRUE)
+  rollsix <- sample(sides, size = 1, replace = TRUE)
+  totalroll = sum(totalroll + rollfive + rollsix)
+  if(rollfive==rollsix) {
+  print("Go To Jail")
 }
+}
+}
+
+
+
 
 ```
 
