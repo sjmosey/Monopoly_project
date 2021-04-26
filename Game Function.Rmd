@@ -1,0 +1,57 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+# creating the board
+tiles <- c("GO", "Mediterranean Avenue", "Community Chest", "Baltic Avenue", "Income Tax", "Reading Railroad", "Oriental Avenue","Chance","Vermont Avenue", "Connecticut Avenue", "Jail", "St. Charles Place", "Electric Company", "States Avenue", "Virginia Avenue","Pennsylvania Railroad", "St. James Place", "Community Chest","Tennessee Avenue","New York Avenue","Free Parking","Kentucky Avenue","Chance","Indiana Avenue","Illinois Avenue","B. & O. Railroad","Atlantic Avenue","Ventnor Avenue", "Water Works", "Marvin Gardens","Go To Jail","Pacific Avenue","North Carolina Avenue", "Community Chest", "Pennsylvania Avenue","Short Line", "Chance","Park Place", "Luxury Tax", "Boardwalk")
+
+board <- data.frame(numeric_tile = 1:40, tiles)
+
+```
+
+```{r}
+# creating dataframe to track players
+FreeParking = c(0)
+Player1 = c(1500)
+Player2 = c(1500)
+Player3 = c(1500)
+Player4 = c(1500)
+LocP1 = c(tiles[1])
+LocP2 = c(tiles[1])
+LocP3 = c(tiles[1])
+LocP4 = c(tiles[1])
+
+PlayLog = data.frame(FreeParking, Player1, Player2, Player3, Player4, LocP1, LocP2, LocP3, LocP4, stringsAsFactors = FALSE)
+PlayLog
+```
+
+```{r}
+# function for changing values in Play Log
+
+# dice function
+roll = function(silent = T){
+  top = sample(1:6,2, replace=TRUE)
+  if(top[1]==top[2]) doules =TRUE
+  else doubles = FALSE
+  movement = sum(top)
+  if(silent) cat("Rolled:", top[1],top[2],"\n")
+  return(list(top=top, doubles=doubles, movement=movement))
+}
+```
+
+```{r}
+PlayLog$LocP1[roll]
+
+tiles[2]
+
+```
+
+```{r}
+#move iterations
+tile_num = c(1:40)
+roll_num = roll(1)$Rolled
+
+tile_num1 = tile_num %>% roll_num1
+```
