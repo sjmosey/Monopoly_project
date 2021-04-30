@@ -74,6 +74,24 @@ community <- c("Advance to Go (Collect $200).","Bank error in your favor—Colle
 chestcards <- data.frame(card_number = 1:16, community)
 
 
+#player data frames
+position<-1
+money<-3000
+properties<-0
+p1<- data.frame(position, money, properties)
+p2<- data.frame(position, money, properties)
+p3<- data.frame(position, money, properties)
+p4<- data.frame(position, money, properties)
+ 
+#players is a list of the each player's data frame
+players<- c(p1,p2,p3,p4)
+class(players)
+
+#for loop is outer part
+for(i in players){
+
+}
+
 #Dice rolling
 sides <- 1:6
 rollone <- sample(sides, size =1, replace = TRUE)
@@ -128,6 +146,5 @@ rollsum3
 4. _Take a Chance_ Incorporate the movement cards into your system. You can ignore the effects of non-movement cards, but not their existence! Which properties are landed on most frequently now? Has this changed dramatically from the previous system (that didn't account for Chance)? Again, visualize this!
 
 5. _Play a Game_ Extend your system to allow for up to 4 players to "play" the game. You may choose a reasonable starting board and player money level (so, you don't have to buy properties). Include payments between players, payments to the bank, and payments from the bank (there are several cards that will effect these that you should account for). You do not need to consider mortgaging properties (so a player loses when their liquid cash has run out). How long do games typically last given your starting board and money level? How does this change if money paid to the bank is placed in "Free Parking" and awarded to players landing on that space?
-
 
 
