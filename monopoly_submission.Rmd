@@ -100,7 +100,24 @@ if (rollone == rolltwo) {
 }
 }
 
-
+roll <- sample(1:6, size = 6, replace = TRUE)
+roll<- as.data.frame(roll)
+rollsum <- roll[1,] + roll[2,]
+rollsum2 <- 0
+rollsum3<- 0
+if (roll[1,]== roll[2,]) {
+  rollsum2 <-  roll[3,] + roll[4,]
+  if(roll[3,] == roll[4,]) {
+    rollsum3 <-  roll[5,] + rollsum[6,]
+    if(roll[5,] == roll[6,]) {
+      print("Go to Jail")
+    }
+  }
+}
+roll
+rollsum
+rollsum2
+rollsum3
 
 
 ```
