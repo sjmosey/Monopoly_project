@@ -24,43 +24,53 @@ takeTurn<-function(p)#function that includes all other functions that one player
 	  if (p$money <= 0){
 	  return()
 	  }
-  while(isDone(p)==FALSE){
-  d<-0
-    roll<-function(x) #function to roll dice just using sampling twice
-      {
-      x<-sample(1:6,2,replace=TRUE)
+  if(isDone(p)==FALSE){
+ d<-0
+roll<-function(x) #function to roll dice just using sampling twice
+    {
+    x<-sample(1:6,2,replace=TRUE)
       if(x[1]==x[2]){
-        return(x) #right now if you roll doubles it will just print the pair
+        return(x) #right now if you roll doubles it will just print the pair and that's it
       }
-      return(x[1]+x[2]) #if you don't roll doubles the sum is printed
-     
-        getDestination<-function(pos, spaces) #function that gets the board position
+    else{
+      spaces=(x[1]+x[2]) #if you don't roll doubles the sum is printed
+      getDesination<-function(pos, spaces) #function that gets the board position
             {
             	pos<-(pos + spaces) %% 40
+            	return(pos)
             }
-      getDesination(p$position, spaces=x[1]+x[2])
+  p$position<-getDesination(p$position, spaces)
     }
-  roll(d)
-  move<-function(p,pos){
-     if(pos < p$position){
-       p$money<-p$money+200 #player passed go and receives $200
-     }
-   else{
-     p$postion<-pos
-     #takeAction(p) - need to define function called takeAction() where the player moves
-   }
- }
- move(p, newPos)
+  }
+ roll(d)
+ #  move<-function(p,pos){
+ #     if(pos < p$position){
+ #       p$money<-p$money+200 #player passed go and receives $200
+ #     }
+ #   else{
+ #     p$postion<-pos
+ #     #takeAction(p) - need to define function called takeAction() where the player moves
+ #   }
+ # }
+ # move(p, newPos)
   }
   }
 }
 
-for(i in 2){
-  takeTurn(p1)
-  takeTurn(p2)
-  takeTurn(p3)
-  takeTurn(p4)
-}
+# for(i in 1){
+#   takeTurn(p1)
+#   takeTurn(p2)
+#   takeTurn(p3)
+#   takeTurn(p4)
+#   
+#   return(p1)
+#   return(p2)
+#   return(p3)
+#   return(p4)
+# }
+
+
+takeTurn(p1)
  
 ```
 
