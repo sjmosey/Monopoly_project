@@ -71,6 +71,29 @@ roll<-function(x) #function to roll dice just using sampling twice
 
 
 takeTurn(p1)
+
+
+#below is test code for part of the loop. I tested it on just p1. It works by rolling the dice and then updating the player position in the data frame. I need to get it to work in the larger loop though.  
+p<-p1
+d<-0
+roll<-function(x) #function to roll dice just using sampling twice
+    {
+    x<-sample(1:6,2,replace=TRUE)
+      if(x[1]==x[2]){
+        return(x) #right now if you roll doubles it will just print the pair and that's it
+      }
+    else{
+      spaces=(x[1]+x[2]) #if you don't roll doubles the sum is printed
+      getDesination<-function(pos, dicesum) #function that gets the board position
+            {
+            	pos<-(pos + dicesum) %% 40
+            	return(pos)
+            }
+  p1$position<-getDesination(p$position, spaces)
+    }
+    return(p1)
+  }
+ roll(d)
  
 ```
 
