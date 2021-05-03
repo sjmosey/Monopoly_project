@@ -17,7 +17,7 @@ p3<- data.frame(position, money, properties)
 p4<- data.frame(position, money, properties)
 
 #ultimately we will want to loop through take turn a number of times (at bottom)
-takeTurn<-function(p)#function that includes all other functions that one player will go through for a turn
+takeTurn<-function(p)#function that includes all other functions that one player will go through for a turn, parameter is one player data frame
 {
   isDone<-function(p) #function checks if player taking turn is out of money or not
     { 
