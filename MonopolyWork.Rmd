@@ -24,27 +24,23 @@ takeTurn<-function(p)#function that includes all other functions that one player
 	  if (p$money <= 0){
 	  return()
 	  }
-  else{
-  rollCount<-0
   while(isDone(p)==FALSE){
-  roll<-function(x) #function to roll dice just using sampling twice
-    {
-    sample(1:6, 2, replace=T)
-    rollCount+1
-  }
-      d1<- roll()
-  	  d2<- roll()
-    	  if(d1==d2 && rollCount==3){
-    	    return()#later implement going to jail
-    	  }
-  	    else{
-          getDestination<-function(pos, spaces) #function that gets the board position
+  d<-0
+    roll<-function(x) #function to roll dice just using sampling twice
+      {
+      x<-sample(1:6,2,replace=TRUE)
+      if(x[1]==x[2]){
+        return(x) #right now if you roll doubles it will just print the pair
+      }
+      return(x[1]+x[2]) #if you don't roll doubles the sum is printed
+     
+        getDestination<-function(pos, spaces) #function that gets the board position
             {
-            	p$postion<-(pos + spaces) %% 40
+            	pos<-(pos + spaces) %% 40
             }
-          newPos<-getDesination(p$position, spaces=d1+d2)
-  	    }
-  
+      getDesination(p$position, spaces=x[1]+x[2])
+    }
+  roll(d)
   move<-function(p,pos){
      if(pos < p$position){
        p$money<-p$money+200 #player passed go and receives $200
@@ -57,7 +53,6 @@ takeTurn<-function(p)#function that includes all other functions that one player
  move(p, newPos)
   }
   }
-  }
 }
 
 for(i in 2){
@@ -66,10 +61,6 @@ for(i in 2){
   takeTurn(p3)
   takeTurn(p4)
 }
-p1
-p2
-p3
-p4
  
 ```
 
