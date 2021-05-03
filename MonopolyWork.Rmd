@@ -1,0 +1,75 @@
+---
+title: "MonopolyWork"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+position<-1
+money<-3000
+properties<-0
+p1<- data.frame(position, money, properties)
+p2<- data.frame(position, money, properties)
+p3<- data.frame(position, money, properties)
+p4<- data.frame(position, money, properties)
+
+#ultimately we will want to loop through take turn a number of times (at bottom)
+takeTurn<-function(p)#function that includes all other functions that one player will go through for a turn
+{
+  isDone<-function(p) #function checks if player taking turn is out of money or not
+    { 
+	  if (p$money <= 0){
+	  return()
+	  }
+  else{
+  rollCount<-0
+  while(isDone(p)==FALSE){
+  roll<-function(x) #function to roll dice just using sampling twice
+    {
+    sample(1:6, 2, replace=T)
+    rollCount+1
+  }
+      d1<- roll()
+  	  d2<- roll()
+    	  if(d1==d2 && rollCount==3){
+    	    return()#later implement going to jail
+    	  }
+  	    else{
+          getDestination<-function(pos, spaces) #function that gets the board position
+            {
+            	p$postion<-(pos + spaces) %% 40
+            }
+          newPos<-getDesination(p$position, spaces=d1+d2)
+  	    }
+  
+  move<-function(p,pos){
+     if(pos < p$position){
+       p$money<-p$money+200 #player passed go and receives $200
+     }
+   else{
+     p$postion<-pos
+     #takeAction(p) - need to define function called takeAction() where the player moves
+   }
+ }
+ move(p, newPos)
+  }
+  }
+  }
+}
+
+for(i in 2){
+  takeTurn(p1)
+  takeTurn(p2)
+  takeTurn(p3)
+  takeTurn(p4)
+}
+p1
+p2
+p3
+p4
+ 
+```
+
