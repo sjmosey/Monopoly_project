@@ -8,6 +8,25 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+# creating the board
+tiles <- c("GO", "Mediterranean Avenue", "Community Chest", "Baltic Avenue", "Income Tax", "Reading Railroad", "Oriental Avenue","Chance","Vermont Avenue", "Connecticut Avenue", "Jail", "St. Charles Place", "Electric Company", "States Avenue", "Virginia Avenue","Pennsylvania Railroad", "St. James Place", "Community Chest","Tennessee Avenue","New York Avenue","Free Parking","Kentucky Avenue","Chance","Indiana Avenue","Illinois Avenue","B. & O. Railroad","Atlantic Avenue","Ventnor Avenue", "Water Works", "Marvin Gardens","Go To Jail","Pacific Avenue","North Carolina Avenue", "Community Chest", "Pennsylvania Avenue","Short Line", "Chance","Park Place", "Luxury Tax", "Boardwalk")
+
+prices <- c("0","60","0","60","0","200","100","0","100","120","0","140","150","140","160","200","180","0","180","200","0","220","0","220","240","200","260","260","150","280","0","300","300","0","320","200","0","350","0","400")
+prices <- as.numeric(prices)
+#For rent that depends on 4 times the dice roll we preset the dice roll to be 7 as that is the most common 2 sided dice roll.
+rent <- c("0","2","0","4","0","25","6","0","6","8","0","10","28","10","12","25","14","0","14","16","0","18","0","18","20","25","22","22","28","24","0","26","26","0","28","28","0","35","0","50")
+rent <- as.numeric(rent)
+board <- data.frame(numeric_tile = 1:40, tiles, prices,rent)
+board
+  
+#creating deck of chance cards
+chance <- c("Advance to go (collect $200).", "Advance to Illinois Ave - If you pass Go, collect $200.", "Advance to St. Charles Place - If you pass Go, collect $200.", "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.", "Bank pays you dividend of $50.", "Get Out of Jail Free.", "Go Back 3 Spaces.", "Go to Jail-Go directly to Jail-Do not pass Go, do not collect $200.", "Make general repairs on all your property-For each house pay $25-For each hotel $100.","Pay poor tax of $15","Take a trip to Reading Railroad–If you pass Go, collect $200.","Take a walk on the Boardwalk–Advance token to Boardwalk","You have been elected Chairman of the Board–Pay each player $50","Your building and loan matures—Collect $150","You have won a crossword competition—Collect $100")
+chancecards <- data.frame(card_number = 1:16, chance)
+
+#creating deck of community chest
+chest <- c("Advance to Go (Collect $200).","Bank error in your favor—Collect $200.","Doctor's fee—Pay $50.","From sale of stock you get $50.","Get Out of Jail Free.","Go to Jail–Go directly to jail–Do not pass Go–Do not collect $200.","Grand Opera Night—Collect $50 from every player for opening night seats.","Holiday Fund matures—Receive $100.","Income tax refund–Collect $20.","Life insurance matures–Collect $100.","Pay hospital fees of $100.","Pay school fees of $150.","Receive from services $25.","You are assessed for street repairs–$40 per house–$115 per hotel.","You have won second prize in a beauty contest–Collect $10.","You inherit $100.")
+
+chestcards <- data.frame(card_number = 1:16, chest)
 position<-1
 money<-3000
 properties<-0
@@ -40,6 +59,7 @@ roll<-function(x) #function to roll dice just using sampling twice
             	return(pos)
             }
   p$position<-getDesination(p$position, spaces)
+  p$position
     }
   }
  roll(d)
@@ -89,11 +109,42 @@ roll<-function(x) #function to roll dice just using sampling twice
             	pos<-(pos + dicesum) %% 40
             	return(pos)
             }
-  p1$position<-getDesination(p$position, spaces)
+  p1$position<-getDesination(p1$position, spaces)
     }
     return(p1)
   }
  roll(d)
  
+#chance and community chest
+#function that randomly selects a card from the chest cards vector
+ p$position <- 18
+drawChestCard <- function(x)
+  {
+    #x <- sample(chest,1)
+    x <- "Advance to go (collect $200)."
+    
+    if(x == "Advance to go (collect $200).") {
+      p$position <- 1
+      p$money <- p$money + 200
+      return(x)
+    }
+}
+#function that randomly selects a card from the chance cards vector
+drawChanceCard <- function(x)
+{
+  x <- sample(chance,1)
+  return(x)
+}
+c<- 0
+#If a player's position is on one of the 3 chance card spots it calls the function
+if (p$position == 8|| p$position == 23 || p$position == 37) {
+  drawChanceCard(c)
+}
+#if the player's position is on one of the 3 chest card spots it calls the function. For some reason It is not changing the p data frame
+if (p$position == 3|| p$position == 18 || p$position == 34) {
+  drawChestCard(c)
+  print("yes")
+}
+p
 ```
 
