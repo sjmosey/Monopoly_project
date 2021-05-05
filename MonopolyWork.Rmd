@@ -36,84 +36,63 @@ p3<- data.frame(position, money, properties)
 p4<- data.frame(position, money, properties)
 
 #ultimately we will want to loop through take turn a number of times (at bottom)
-takeTurn<-function(p)#function that includes all other functions that one player will go through for a turn, parameter is one player data frame
+takeTurn<-function(p)#function that includes all other functions that one player will go through for a turn
 {
-  isDone<-function(p) #function checks if player taking turn is out of money or not
+  isDone<-function(p) #function checks if player taking turn is out of money or not, parameter is a player dataframe
     { 
 	  if (p$money <= 0){
 	  return()
 	  }
-  if(isDone(p)==FALSE){
- d<-0
-roll<-function(x) #function to roll dice just using sampling twice
+  if(p$money > 0){
+d<-0
+roll<-function(x,p) #function to roll dice just using sampling twice
     {
     x<-sample(1:6,2,replace=TRUE)
       if(x[1]==x[2]){
         return(x) #right now if you roll doubles it will just print the pair and that's it
       }
     else{
-      spaces=(x[1]+x[2]) #if you don't roll doubles the sum is printed
-      getDesination<-function(pos, spaces) #function that gets the board position
+      spaces<-(x[1]+x[2]) #if you don't roll doubles the sum is printed
+      getDesination<-function(pos, dicesum) #function that gets the board position
             {
-            	pos<-(pos + spaces) %% 40
-            	return(pos)
+            	pos<-(pos + dicesum) %% 40
             }
   p$position<-getDesination(p$position, spaces)
-  p$position
     }
+   return(p)
+ }
+ roll(d,p)
+     #  move<-function(p,pos){
+     #     if(pos < p$position){
+     #       p$money<-p$money+200 #player passed go and receives $200
+     #     }
+     #   else{
+     #     p$postion<-pos
+     #     #takeAction(p) - need to define function called takeAction() where the player moves
+     #   }
+     # }
+     # move(p, newPos)
   }
- roll(d)
- #  move<-function(p,pos){
- #     if(pos < p$position){
- #       p$money<-p$money+200 #player passed go and receives $200
- #     }
- #   else{
- #     p$postion<-pos
- #     #takeAction(p) - need to define function called takeAction() where the player moves
- #   }
- # }
- # move(p, newPos)
   }
-  }
+  isDone(p)
 }
 
-# for(i in 1){
+# for(i in 2){
 #   takeTurn(p1)
 #   takeTurn(p2)
 #   takeTurn(p3)
 #   takeTurn(p4)
-#   
+# 
 #   return(p1)
 #   return(p2)
 #   return(p3)
 #   return(p4)
 # }
 
-
 takeTurn(p1)
-
-
-#below is test code for part of the loop. I tested it on just p1. It works by rolling the dice and then updating the player position in the data frame. I need to get it to work in the larger loop though.  
-p<-p1
-d<-0
-roll<-function(x) #function to roll dice just using sampling twice
-    {
-    x<-sample(1:6,2,replace=TRUE)
-      if(x[1]==x[2]){
-        return(x) #right now if you roll doubles it will just print the pair and that's it
-      }
-    else{
-      spaces=(x[1]+x[2]) #if you don't roll doubles the sum is printed
-      getDesination<-function(pos, dicesum) #function that gets the board position
-            {
-            	pos<-(pos + dicesum) %% 40
-            	return(pos)
-            }
-  p1$position<-getDesination(p1$position, spaces)
-    }
-    return(p1)
-  }
- roll(d)
+takeTurn(p2)
+takeTurn(p3)
+takeTurn(p4)
  
 #chance and community chest
 #function that randomly selects a card from the chest cards vector
