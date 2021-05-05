@@ -30,10 +30,11 @@ chestcards <- data.frame(card_number = 1:16, chest)
 position<-1
 money<-3000
 properties<-0
-p1<- data.frame(position, money, properties)
-p2<- data.frame(position, money, properties)
-p3<- data.frame(position, money, properties)
-p4<- data.frame(position, money, properties)
+turn<-0 #this will keep track of how many turns each player got to take
+p1<- data.frame(turn,position, money, properties)
+p2<- data.frame(turn,position, money, properties)
+p3<- data.frame(turn,position, money, properties)
+p4<- data.frame(turn,position, money, properties)
 
 #ultimately we will want to loop through take turn a number of times (at bottom)
 takeTurn<-function(p)#function that includes all other functions that one player will go through for a turn
@@ -41,9 +42,10 @@ takeTurn<-function(p)#function that includes all other functions that one player
   isDone<-function(p) #function checks if player taking turn is out of money or not, parameter is a player data frame
     { 
 	  if (p$money <= 0){
-	  return()
+	    return()
 	  }
   if(p$money > 0){
+    p$turn<-p$turn+1 #the player has enough money to take a turn, so turn column increases by 1
 d<-0
 roll<-function(x,p) #function to roll dice just using sampling twice
     {
@@ -52,10 +54,10 @@ roll<-function(x,p) #function to roll dice just using sampling twice
         return(p) #right now if you roll doubles it will just print the position the player was on before rolling doubles
       }
     else{
-      spaces<-(x[1]+x[2]) #if you don't roll doubles the sum is printed
+      spaces<-(x[1]+x[2]) #if you don't roll doubles the dice are summed
       getDesination<-function(p, pos, dicesum) #function that gets the board position
-            {
-            	pos<-(pos + dicesum) %% 40
+            { 
+            	pos<-(pos + dicesum) %% 40 #sum of dice added to current player position for new position
             	p$position<-pos
             	return(p)
       }
@@ -77,18 +79,6 @@ roll<-function(x,p) #function to roll dice just using sampling twice
   }
   isDone(p)
 }
-
-# for(i in 2){
-#   takeTurn(p1)
-#   takeTurn(p2)
-#   takeTurn(p3)
-#   takeTurn(p4)
-# 
-#   return(p1)
-#   return(p2)
-#   return(p3)
-#   return(p4)
-# }
 
 p1<-takeTurn(p1)
 p2<-takeTurn(p2)
