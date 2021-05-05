@@ -49,7 +49,7 @@ roll<-function(x,p) #function to roll dice just using sampling twice
     {
     x<-sample(1:6,2,replace=TRUE)
       if(x[1]==x[2]){
-        return() #right now if you roll doubles it will just print the pair and that's it
+        return(p) #right now if you roll doubles it will just print the position the player was on before rolling doubles
       }
     else{
       spaces<-(x[1]+x[2]) #if you don't roll doubles the sum is printed
