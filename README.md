@@ -83,4 +83,13 @@ TurnLocP4 = tiles[sum(P4)%%length(tiles)]
 loclogP4 = append(loclogP4, tiles[sum(P4)%%length(tiles)])
 
 ```
+```{r}
+# creating statement for being in jail
+if (p$position == 11) {
+  p$money<-p$money - 50 #player pays $50 for being in jail
+  if (p$money<-p$money-50) {
+    p$position == 12)
+  }
+}
 
+```
