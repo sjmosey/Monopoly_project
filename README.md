@@ -56,6 +56,11 @@ P1 = as.vector(1)
 P2 = as.vector(1)
 P3 = as.vector(1)
 P4 = as.vector(1)
+loclogP1 = as.vector(board$tiles[1])
+loclogP2 = as.vector(board$tiles[1])
+loclogP3 = as.vector(board$tiles[1])
+loclogP4 = as.vector(board$tiles[1])
+gameLog = data.frame(P1, P2, P3, P4, loclogP1, loclogP2, loclogP3, loclogP4)
 ```
 
 
@@ -63,14 +68,19 @@ P4 = as.vector(1)
 # creating vectors for each player where each roll adds the sum of the dice and then adds it to the vector.  This can be run and will continue around the game board.  Just need to figure out the location we want to save it in.
 P1 = append(P1,(1+sum(d2Roll())))
 TurnLocP1 = tiles[sum(P1)%%length(tiles)]
+loclogP1 = append(loclogP1, tiles[sum(P1)%%length(tiles)])
 
 P2 = append(P2,(1+sum(d2Roll())))
 TurnLocP2 = tiles[sum(P2)%%length(tiles)]
+loclogP2 = append(loclogP2, tiles[sum(P2)%%length(tiles)])
 
 P3 = append(P3,(1+sum(d2Roll())))
 TurnLocP3 = tiles[sum(P3)%%length(tiles)]
+loclogP3 = append(loclogP3, tiles[sum(P3)%%length(tiles)])
 
 P4 = append(P4,(1+sum(d2Roll())))
 TurnLocP4 = tiles[sum(P4)%%length(tiles)]
+loclogP4 = append(loclogP4, tiles[sum(P4)%%length(tiles)])
+
 ```
 
