@@ -36,59 +36,64 @@ p2<- data.frame(turn,position, money, properties)
 p3<- data.frame(turn,position, money, properties)
 p4<- data.frame(turn,position, money, properties)
 
-#ultimately we will want to loop through take turn a number of times (at bottom)
-takeTurn<-function(p)#function that includes all other functions that one player will go through for a turn
-{
-  isDone<-function(p) #function checks if player taking turn is out of money or not, parameter is a player data frame
-    { 
-	  if (p$money <= 0){
-	    return()
-	  }
-  if(p$money > 0){
-    p$turn<-p$turn+1 #the player has enough money to take a turn, so turn column increases by 1
-d<-0
-roll<-function(x,p) #function to roll dice just using sampling twice
-    {
-    x<-sample(1:6,2,replace=TRUE)
-      if(x[1]==x[2]){
-        return(p) #right now if you roll doubles it will just print the position the player was on before rolling doubles
-      }
-    else{
-      spaces<-(x[1]+x[2]) #if you don't roll doubles the dice are summed
-      getDesination<-function(p, pos, dicesum) #function that gets the board position
-            { 
-            	pos<-(pos + dicesum) %% 40 #sum of dice added to current player position for new position
-            	p$position<-pos
-            	return(p)
-      }
-  getDesination(p, p$position, spaces)
-    }
- }
- roll(d,p)
-     #  move<-function(p, pos){
-     #     if(pos < p$position){
-     #       p$money<-p$money+200 #player passed go and receives $200
-     #     }
-     #   else{
-     #     p$postion<-pos
-     #     #takeAction(p) - need to define function called takeAction() where the player moves
-     #   }
-     # }
-     # move(p, newPos)
-  }
-  }
-  isDone(p)
+move<-function(p, pos) #function that updates the position of the player
+  {
+	if(pos < p$position)
+	{
+		#player passed go
+		p$money<-p$money + 200
+  }	
+	p$position<-pos
+	#takeAction(p) #take action will need to be a function that determined what to do when tile is landed on
+	return(p)
 }
 
-p1<-takeTurn(p1)
-p2<-takeTurn(p2)
-p3<-takeTurn(p3)
-p4<-takeTurn(p4)
+getDesination<-function(pos, dicesum) #function that gets the board position from adding the sum of the dice to current player position
+    { 
+    return((pos + dicesum) %% 40)
+    }
 
+roll<-function() #function to roll dice just using sampling 
+    {
+    return(sample(1:6,1))
+    }
+
+isDone<-function(p) #function checks if player taking a turn is out of money or not, parameter is a player data frame
+    { 
+	  return(p$money <= 0)
+    }
+  
+takeTurn<-function(p)#function that includes all other functions that one player will go through for a turn
+{
+  if(isDone(p)){
+    return()
+  }
+    p$turn<-p$turn+1 #the player has enough money to take a turn, so turn column increases by 1
+    isTurnDone <- FALSE
+    rollCount <- 0 #keeps track of how many rolls
+    while(!isTurnDone) #loops to roll dice until thet do not get doubles
+      { 
+      rollCount<-rollCount+1
+       d1<-roll()
+       d2<-roll()
+       if(d1==d2 & rollCount==3) #this means the player has rolled doubles twice and right now it just ends the players turn
+         {
+         return(p)
+       }
+       if(d1!=d2) #if if gets here, the player did not roll doubles and the loop will end after getDestination is called
+         {
+         isTurnDone = TRUE
+       }
+      newPos<- getDesination(p$position, dicesum<-d1+d2)
+    } 
+    p<-move(p, newPos)
+  return(p)
+}
+
+for(i in 1:10){
+p1<-takeTurn(p1)
+}
 p1
-p2
-p3
-p4
  
 #chance and community chest
 #function that randomly selects a card from the chest cards vector
