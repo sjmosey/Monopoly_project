@@ -70,6 +70,7 @@ isMyProperty<-function(p,pos) #this function checks to see if the player already
   pos<-tiles[pos] #setting pos equal to the name of the tile
   return(p==pos) #checking if the name of the tile is in the player data frame, if it is, they own it and their turn is over
   } 
+ #All functions above takeAction are done
 takeAction<-function(p)
   {
     if(isMyProperty(p,p$position))
