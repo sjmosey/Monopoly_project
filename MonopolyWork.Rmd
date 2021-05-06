@@ -159,11 +159,11 @@ takeTurn<-function(p)#function that includes all other functions that one player
 # p1
 
 p1<-takeTurn(p1)
-p
+
 #chance and community chest
 #function that randomly selects a card from the chest cards vector
- p$position <- 18
-drawChestCard <- function(x)
+
+drawChestCard <- function(p,x)
   {
     #x <- sample(chest,1)
     x <- "Advance to go (collect $200)."
@@ -171,25 +171,46 @@ drawChestCard <- function(x)
     if(x == "Advance to go (collect $200).") {
       p$position <- 1
       p$money <- p$money + 200
-      return(x)
+      return(p)
+    }
+    if(x =="Bank error in your favor—Collect $200.") {
+      p$money <- p$money + 200
+      return(p)
+    }
+    if(x =="Doctor's fee—Pay $50.") {
+      p$money <- p$money - 50
+      return(p)
+    }
+    if(x == "From sale of stock you get $50.") {
+      p$money <- p$money +50
+      return(p)
+    }
+    if(x == "Go to Jail–Go directly to jail–Do not pass Go–Do not collect $200.") {
+      p$position <- 11
+      return(p)
     }
 }
+p4 <- drawChestCard(p4)
+p4
+
 #function that randomly selects a card from the chance cards vector
 drawChanceCard <- function(x)
 {
   x <- sample(chance,1)
   return(x)
 }
-c<- 0
-#If a player's position is on one of the 3 chance card spots it calls the function
+checkPosition <- function(p) {
 if (p$position == 8|| p$position == 23 || p$position == 37) {
-  drawChanceCard(c)
+  drawChanceCard(p)
 }
 #if the player's position is on one of the 3 chest card spots it calls the function. For some reason It is not changing the p data frame
 if (p$position == 3|| p$position == 18 || p$position == 34) {
-  drawChestCard(c)
-  print("yes")
+  drawChestCard(p)
+  return(p)
 }
-p
+}
+
+
+
 ```
 
