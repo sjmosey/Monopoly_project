@@ -88,7 +88,11 @@ takeAction<-function(p)
       {
       return(p)
       }
-    if(isCommunityorChest(p$position))
+    if(isCommunity(p$position))
+      {
+      return(p)
+      }
+  if(isChance(p$position))
       {
       return(p)
       }
@@ -104,7 +108,8 @@ move<-function(p, pos) #function that updates the position of the player
 	p$position<-pos
 	takeAction(p)
 	return(p)
-}	
+}
+
 getDesination<-function(pos, dicesum) #function that gets the board position from adding the sum of the dice to current player position
     { 
     return((pos + dicesum) %% 40)
@@ -154,7 +159,7 @@ takeTurn<-function(p)#function that includes all other functions that one player
 # p1
 
 p1<-takeTurn(p1)
-p1
+p
 #chance and community chest
 #function that randomly selects a card from the chest cards vector
  p$position <- 18
