@@ -37,6 +37,10 @@ p2<- data.frame(turn,position, money, lastRollSum,properties)
 p3<- data.frame(turn,position, money,lastRollSum, properties)
 p4<- data.frame(turn,position, money,lastRollSum, properties)
 
+updateLocations<-function(p,pvector)
+  {
+  pvector = append(pvector, 1+p$lastRollSum)
+  }
 isCommunityorChest<-function(pos) #checks if they are on community chest
   {
     return(pos==3|18|34) 
@@ -45,7 +49,7 @@ isChance<-function(pos) #checks if they are on chance
   {
    return(pos==8|23|37) 
   }
-isGoToJail<-function(pos) #function checks to see if the player has landed on the go to jail tile
+isGoToJail<-function(p,pos) #function checks to see if the player has landed on the go to jail tile
   {
     return(pos==31)
   }
@@ -76,8 +80,10 @@ takeAction<-function(p)
       {
       return(p)
       }
-    if(isGoToJail(p$position))
+    if(isGoToJail(p,p$position))
       {
+      p$money<-p$money-50
+      pos<-11
       return(p)
       }
     if(isJail(p$position))
@@ -109,7 +115,6 @@ move<-function(p, pos) #function that updates the position of the player
 	takeAction(p)
 	return(p)
 }
-
 getDesination<-function(pos, dicesum) #function that gets the board position from adding the sum of the dice to current player position
     { 
     return((pos + dicesum) %% 40)
@@ -127,6 +132,7 @@ isDone<-function(p) #function checks if player taking a turn is out of money or 
   
 takeTurn<-function(p)#function that includes all other functions that one player will go through for a turn
 {
+ # browser()
   if(isDone(p)){
     return(p)
   }
@@ -135,10 +141,10 @@ takeTurn<-function(p)#function that includes all other functions that one player
     rollCount <- 0 #keeps track of how many rolls
     while(!isTurnDone) #loops to roll dice until thet do not get doubles
       { 
-      rollCount<-rollCount+1
+       rollCount<-rollCount+1
        d1<-roll()
        d2<-roll()
-       p$lastRollSum<-d1+d2 #updating player data frame with the sum of their last roll
+       p$lastRollSum<-d1+d2
        if(d1==d2 & rollCount==3) #this means the player has rolled doubles twice and right now it just ends the players turn
          {
          return(p)
@@ -150,7 +156,7 @@ takeTurn<-function(p)#function that includes all other functions that one player
       newPos<- getDesination(p$position, dicesum<-d1+d2)
     } 
     p<-move(p, newPos)
-  return(p) 
+  return(p)
 }
 
 # for(i in 1:10){
