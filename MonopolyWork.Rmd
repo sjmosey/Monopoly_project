@@ -23,10 +23,10 @@ board
 chance <- c("Advance to go (collect $200).", "Advance to Illinois Ave - If you pass Go, collect $200.", "Advance to St. Charles Place - If you pass Go, collect $200.", "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.", "Bank pays you dividend of $50.", "Get Out of Jail Free.", "Go Back 3 Spaces.", "Go to Jail-Go directly to Jail-Do not pass Go, do not collect $200.", "Make general repairs on all your property-For each house pay $25-For each hotel $100.","Pay poor tax of $15","Take a trip to Reading Railroad–If you pass Go, collect $200.","Take a walk on the Boardwalk–Advance token to Boardwalk","You have been elected Chairman of the Board–Pay each player $50","Your building and loan matures—Collect $150","You have won a crossword competition—Collect $100")
 chancecards <- data.frame(card_number = 1:16, chance)
 
-#creating deck of community chest
-chest <- c("Advance to Go (Collect $200).","Bank error in your favor—Collect $200.","Doctor's fee—Pay $50.","From sale of stock you get $50.","Get Out of Jail Free.","Go to Jail–Go directly to jail–Do not pass Go–Do not collect $200.","Grand Opera Night—Collect $50 from every player for opening night seats.","Holiday Fund matures—Receive $100.","Income tax refund–Collect $20.","Life insurance matures–Collect $100.","Pay hospital fees of $100.","Pay school fees of $150.","Receive from services $25.","You are assessed for street repairs–$40 per house–$115 per hotel.","You have won second prize in a beauty contest–Collect $10.","You inherit $100.")
+#creating deck of community chest. Removed get out of jail free card and hotel/ house assessment cards
+chest <- c("Advance to Go (Collect $200).","Bank error in your favor—Collect $200.","Doctor's fee—Pay $50.","From sale of stock you get $50.","Go to Jail–Go directly to jail–Do not pass Go–Do not collect $200.","Grand Opera Night—Collect $50 from every player for opening night seats.","Holiday Fund matures—Receive $100.","Income tax refund–Collect $20.","Life insurance matures–Collect $100.","Pay hospital fees of $100.","Pay school fees of $150.","Receive from services $25.","You have won second prize in a beauty contest–Collect $10.","You inherit $100.")
 
-chestcards <- data.frame(card_number = 1:16, chest)
+chestcards <- data.frame(card_number = 1:14, chest)
 position<-1
 money<-3000
 lastRollSum<-0 #will need if player lands on utility (they owe 4x amount of dice)
@@ -37,11 +37,12 @@ p2<- data.frame(turn,position, money, lastRollSum,properties)
 p3<- data.frame(turn,position, money,lastRollSum, properties)
 p4<- data.frame(turn,position, money,lastRollSum, properties)
 
+
 updateLocations<-function(p,pvector)
   {
   pvector = append(pvector, 1+p$lastRollSum)
   }
-isCommunityorChest<-function(pos) #checks if they are on community chest
+isCommunityChest<-function(pos) #checks if they are on community chest
   {
     return(pos==3|18|34) 
   }
@@ -170,32 +171,70 @@ p1<-takeTurn(p1)
 #chance and community chest
 #function that randomly selects a card from the chest cards vector
 
-drawChestCard <- function(p,x)
+#chance and community chest
+#function that randomly selects a card from the chest cards vector
+
+drawChestCard <- function(p)
   {
-    #x <- sample(chest,1)
-    x <- "Advance to go (collect $200)."
+    x <- sample(chest,1, replace = TRUE)
+    
     
     if(x == "Advance to go (collect $200).") {
       p$position <- 1
       p$money <- p$money + 200
-      return(p)
+      
     }
     if(x =="Bank error in your favor—Collect $200.") {
       p$money <- p$money + 200
-      return(p)
+      
     }
     if(x =="Doctor's fee—Pay $50.") {
       p$money <- p$money - 50
-      return(p)
+      
     }
     if(x == "From sale of stock you get $50.") {
       p$money <- p$money +50
-      return(p)
+      
     }
     if(x == "Go to Jail–Go directly to jail–Do not pass Go–Do not collect $200.") {
       p$position <- 11
-      return(p)
+      p$money <- p$money - 50
+      
     }
+    if(x=="Grand Opera Night—Collect $50 from every player for opening night seats.") {
+      p1$money <- p1$money - 50
+      p2$money <- p2$money - 50
+      p3$money <- p2$money - 50
+      p4$money <- p4$money - 50
+     
+      p$money <- p$money + 200
+    }
+    if(x == "Holiday Fund matures—Receive $100.") {
+      p$money <- p$money + 100
+    }
+    if(x == "Income tax refund–Collect $20.") {
+      p$money <- p$money + 20
+    }
+    if(x == "Life insurance matures–Collect $100.") {
+      p$money <- p$money + 100
+    }
+    if(x == "Pay hospital fees of $100.") {
+      p$money <- p$money - 100
+    }
+    if(x == "Pay school fees of $150.") {
+      p$money <- p$money - 150
+    }
+    if(x == "Receive from services $25.") {
+      p$money <- p$money + 25
+    }
+    if(x == "You have won second prize in a beauty contest–Collect $10.") {
+      p$money <- p$money + 10
+    }
+    if(x == "You inherit $100.") {
+      p$money <- p$money + 100
+    }
+  print(x)
+  return(p)
 }
 p4 <- drawChestCard(p4)
 p4
