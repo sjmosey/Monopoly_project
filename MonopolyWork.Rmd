@@ -16,7 +16,8 @@ prices <- as.numeric(prices)
 #For rent that depends on 4 times the dice roll we preset the dice roll to be 7 as that is the most common 2 sided dice roll.
 rent <- c("0","2","0","4","0","25","6","0","6","8","0","10","28","10","12","25","14","0","14","16","0","18","0","18","20","25","22","22","28","24","0","26","26","0","28","28","0","35","0","50")
 rent <- as.numeric(rent)
-board <- data.frame(numeric_tile = 1:40, tiles, prices,rent)
+ownerID<-rep(c(0),times=40)
+board <- data.frame(numeric_tile = 1:40, tiles, prices,rent,ownerID)
 board
   
 #creating deck of chance cards
@@ -53,6 +54,102 @@ loclogp3 = as.vector(board$tiles[1])
 loclogp4 = as.vector(board$tiles[1])
 
 
+payPlayer<-function(id,amount) #checks who the owner is and pays them
+  {
+  if(id==1)
+    {
+    p1$money<<-p1$money+amount
+    }
+  if(id==2)
+    {
+    p2$money<<-p2$money+amount
+    }
+  if(id==3)
+    {
+    p3$money<<-p3$money+amount
+    }
+  if(id==4)
+    {
+    p4$money<<-p4$money+amount
+    }
+  }
+transferMoney<-function(p,to,amount)
+  {
+  if(p$money < amount) #if player doesn't have enough to pay full price, pay what they have
+    {
+    amount<-p$money
+    }
+  p$money<-p$money-amount #subtracting the amount from the player who is paying
+  payPlayer(to,amount)
+  return(p)
+  }
+getOwner<-function(board,pos) 
+  {
+  return(board$ownerID[pos])
+}
+drawChestCard <- function(p)
+  {
+  #browser()
+    x <- sample(chest,1, replace = TRUE)
+    
+    
+    if(x == "Advance to go (collect $200).") {
+      p$position <- 1
+      p$money <- p$money + 200
+      
+    }
+    if(x =="Bank error in your favor—Collect $200.") {
+      p$money <- p$money + 200
+      
+    }
+    if(x =="Doctor's fee—Pay $50.") {
+      p$money <- p$money - 50
+      
+    }
+    if(x == "From sale of stock you get $50.") {
+      p$money <- p$money +50
+      
+    }
+    if(x == "Go to Jail–Go directly to jail–Do not pass Go–Do not collect $200.") {
+      p$position <- 11
+      p$money <- p$money - 50
+      
+    }
+    if(x=="Grand Opera Night—Collect $50 from every player for opening night seats.") {
+      p1$money <- p1$money - 50
+      p2$money <- p2$money - 50
+      p3$money <- p2$money - 50
+      p4$money <- p4$money - 50
+     
+      p$money <- p$money + 200
+    }
+    if(x == "Holiday Fund matures—Receive $100.") {
+      p$money <- p$money + 100
+    }
+    if(x == "Income tax refund–Collect $20.") {
+      p$money <- p$money + 20
+    }
+    if(x == "Life insurance matures–Collect $100.") {
+      p$money <- p$money + 100
+    }
+    if(x == "Pay hospital fees of $100.") {
+      p$money <- p$money - 100
+    }
+    if(x == "Pay school fees of $150.") {
+      p$money <- p$money - 150
+    }
+    if(x == "Receive from services $25.") {
+      p$money <- p$money + 25
+    }
+    if(x == "You have won second prize in a beauty contest–Collect $10.") {
+      p$money <- p$money + 10
+    }
+    if(x == "You inherit $100.") {
+      p$money <- p$money + 100
+    }
+    #prin(x)
+  return(p)
+}
 addToPlayerVector<-function(p,pos) #checks what player is up and then updates location vectors
   {
     if(p$ID==1)
@@ -78,7 +175,7 @@ addToPlayerVector<-function(p,pos) #checks what player is up and then updates lo
   }
 isCommunityChest<-function(pos) #checks if they are on community chest
   {
-    return(pos==3|18|34) 
+    return(pos==3|pos==18|pos==34) 
   }
 isChance<-function(pos) #checks if they are on chance
   {
@@ -98,45 +195,75 @@ isGo<-function(pos) #function checks to see if the player has landed on Go
   }
 isUtility<-function(pos) #checks to see if player is on a utility, water works or electric company
   {
-    return(pos==13|29)
+    return(pos==13|pos==29)
   }
-isMyProperty<-function(p,pos) #this function checks to see if the player already owns the tile they have landed on
+isProperty<-function(pos) #this function checks to see if the player is on a buyable property
   {
-  pos<-tiles[pos] #setting pos equal to the name of the tile
-  return(p==pos) #checking if the name of the tile is in the player data frame, if it is, they own it and their turn is over
+  return(board$prices[pos]>0)
   } 
 takeAction<-function(p)
   {
-    if(isMyProperty(p,p$position))
+    if(isProperty(p$position)) 
       {
-      return(p)
+      ownerid<-getOwner(board,p$position) #checks if someone owns the property by looking at the ownerID column of the board data frame
+      if(p$ID==ownerid) #this means the player already owns the property and their turn is over
+        {
+        return(p)
+        }
+      if(ownerid==0) #no one owns the property
+        {
+        if(p$money>=board$prices[p$position]) #check to see if player has enough money to buy property
+          {
+          p$money<-p$money-board$prices[p$position] #pay for property
+          board$ownerID[p$position]<<-p$ID #assign ownership of property in board data frame
+          return(p)
+          }
+        else
+          {
+          return(p) #if player doesn't have enough money to buy the property their turn is over
+          }
+        }
+      else
+        {
+        if(isDone(p)) #if the player is out of the game we won't pay them
+          {
+          return(p)
+          }
+          else
+            {
+              browser()
+            p<-transferMoney(p, ownerid, board$rent[p$position])
+            return(p)
+            }
+        }
+      
       }
     if(isUtility(p$position))
       {
       return(p)
       }
-    if(isGoToJail(p,p$position))
-      {
-      p$money<-p$money-50
-      pos<-11
-      return(p)
-      }
-    if(isJail(p$position))
-      {
-      return(p)
-      }
-    if(isGo(p$position))
-      {
-      return(p)
-      }
-    if(isCommunity(p$position))
-      {
-      return(p)
-      }
-  if(isChance(p$position))
-      {
-      return(p)
-      }
+  #   if(isGoToJail(p,p$position))
+  #     {
+  #     p$money<-p$money-50
+  #     pos<-11
+  #     return(p)
+  #     }
+  #   if(isJail(p$position))
+  #     {
+  #     return(p)
+  #     }
+  #   if(isGo(p$position))
+  #     {
+  #     return(p)
+  #     }
+  #   if(isCommunity(p$position))
+  #     {
+  #     p<-drawChestCard(p)
+  #     }
+  # if(isChance(p$position))
+  #     {
+  #     return(p)
+  #     }
     return(p)
   }
 move<-function(p, pos) #function that updates the position of the player
@@ -147,7 +274,7 @@ move<-function(p, pos) #function that updates the position of the player
 		p$money<-p$money + 200
     }	
 	p$position<-pos
-	takeAction(p)
+	p<-takeAction(p)
 	return(p)
 }
 getDesination<-function(pos, dicesum) #function that gets the board position from adding the sum of the dice to current player position
@@ -167,6 +294,7 @@ isDone<-function(p) #function checks if player taking a turn is out of money or 
   
 takeTurn<-function(p)#function that includes all other functions that one player will go through for a turn
 {
+  #browser()
   if(isDone(p)){
     return(p)
   }
@@ -175,7 +303,7 @@ takeTurn<-function(p)#function that includes all other functions that one player
     rollCount <- 0 #keeps track of how many rolls
     while(!isTurnDone) #loops to roll dice until thet do not get doubles
       { 
-      browser()
+      #browser()
        rollCount<-rollCount+1
        d1<-roll()
        d2<-roll()
@@ -201,6 +329,7 @@ takeTurn<-function(p)#function that includes all other functions that one player
 # p1
 
 p1<-takeTurn(p1)
+p1
  
 
 #chance and community chest
