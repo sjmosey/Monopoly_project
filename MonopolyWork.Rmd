@@ -147,7 +147,7 @@ drawChestCard <- function(p)
     if(x == "You inherit $100.") {
       p$money <- p$money + 100
     }
-    #print(x)
+    #prin(x)
   return(p)
 }
 addToPlayerVector<-function(p,pos) #checks what player is up and then updates location vectors
@@ -179,7 +179,7 @@ isCommunityChest<-function(pos) #checks if they are on community chest
   }
 isChance<-function(pos) #checks if they are on chance
   {
-   return(pos==8|23|37) 
+   return(pos==8|pos==23|pos==37) 
   }
 isGoToJail<-function(p,pos) #function checks to see if the player has landed on the go to jail tile
   {
@@ -197,9 +197,9 @@ isUtility<-function(pos) #checks to see if player is on a utility, water works o
   {
     return(pos==13|pos==29)
   }
-isProperty<-function(pos) #this function checks to see if the player is on a buyable property
+isProperty<-function(pos) #this function checks to see if the player is on a buyable property, not including utilities
   {
-  return(board$prices[pos]>0)
+  return(board$prices[pos]>0 && pos!=13 && pos!=29) 
   } 
 takeAction<-function(p)
   {
@@ -231,35 +231,64 @@ takeAction<-function(p)
           }
           else
             {
-              browser()
             p<-transferMoney(p, ownerid, board$rent[p$position])
             return(p)
             }
-        }
+         }
       
       }
     if(isUtility(p$position))
       {
+      ownerid<-getOwner(board,p$position) #checks if someone owns the property by looking at the ownerID column of the board data frame
+      if(p$ID==ownerid) #this means the player already owns the property and their turn is over
+        {
+        return(p)
+        }
+      if(ownerid==0) #no one owns the property
+        {
+        if(p$money>=board$prices[p$position]) #check to see if player has enough money to buy property
+          {
+          p$money<-p$money-board$prices[p$position] #pay for property
+          board$ownerID[p$position]<<-p$ID #assign ownership of property in board data frame
+          return(p)
+          }
+        else
+          {
+          return(p) #if player doesn't have enough money to buy the property their turn is over
+          }
+        }
+        else
+        {
+        if(isDone(p)) #if the player is out of the game we won't pay them
+          {
+          return(p)
+          }
+          else
+            {
+            amount<-p$lastRollSum *4
+            p<-transferMoney(p, ownerid, amount) #rent is 4  times dice sum
+            return(p)
+            }
+         }
+      }
+    if(isGoToJail(p,p$position))
+      {
+      p$money<-p$money-50
+      p$position<-11
       return(p)
       }
-  #   if(isGoToJail(p,p$position))
-  #     {
-  #     p$money<-p$money-50
-  #     pos<-11
-  #     return(p)
-  #     }
-  #   if(isJail(p$position))
-  #     {
-  #     return(p)
-  #     }
-  #   if(isGo(p$position))
-  #     {
-  #     return(p)
-  #     }
-  #   if(isCommunity(p$position))
-  #     {
-  #     p<-drawChestCard(p)
-  #     }
+    if(isJail(p$position))  
+      {
+      return(p)
+      }
+    if(isGo(p$position))
+      {
+      return(p)
+      }
+    if(isCommunity(p$position))
+      {
+      p<-drawChestCard(p)
+      }
   # if(isChance(p$position))
   #     {
   #     return(p)
@@ -270,8 +299,7 @@ move<-function(p, pos) #function that updates the position of the player
   {
 	if(pos < p$position)
 	  {
-		#player passed go
-		p$money<-p$money + 200
+		p$money<-p$money + 200 #player passed go
     }	
 	p$position<-pos
 	p<-takeAction(p)
@@ -310,6 +338,8 @@ takeTurn<-function(p)#function that includes all other functions that one player
        p$lastRollSum<-d1+d2
        if(d1==d2 & rollCount==3) #this means the player has rolled doubles twice and right now it just ends the players turn
          {
+         p$money<-p$money-50
+         p$position<-11
          return(p)
        }
        if(d1!=d2) #if if gets here, the player did not roll doubles and the loop will end after getDestination is called
@@ -330,7 +360,6 @@ takeTurn<-function(p)#function that includes all other functions that one player
 
 p1<-takeTurn(p1)
 p1
- 
 
 #chance and community chest
 #function that randomly selects a card from the chest cards vector
