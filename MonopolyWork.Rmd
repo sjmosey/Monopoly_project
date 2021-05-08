@@ -147,7 +147,7 @@ drawChestCard <- function(p)
     if(x == "You inherit $100.") {
       p$money <- p$money + 100
     }
-    #prin(x)
+    #print(x)
   return(p)
 }
 addToPlayerVector<-function(p,pos) #checks what player is up and then updates location vectors
@@ -401,25 +401,79 @@ drawChestCard <- function(p)
   return(p)
 }
 p4 <- drawChestCard(p4)
-p4
+
+#chance cards not yet in if statements c(  #"Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the #nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.", "Make general repairs on #all your property-For each house pay $25-For each hotel $100.","Take a trip to Reading Railroad–If you pass Go, collect $200.",)
 
 #function that randomly selects a card from the chance cards vector
-drawChanceCard <- function(x)
+drawChanceCard <- function(p, pos)
 {
-  x <- sample(chance,1)
-  return(x)
-}
-checkPosition <- function(p) {
-if (p$position == 8|| p$position == 23 || p$position == 37) {
-  drawChanceCard(p)
-}
-#if the player's position is on one of the 3 chest card spots it calls the function. For some reason It is not changing the p data frame
-if (p$position == 3|| p$position == 18 || p$position == 34) {
-  drawChestCard(p)
+    x <- sample(chance,1)
+  
+  if(x == "You have won a crossword competition—Collect $100") {
+      p$money <- p$money + 100
+    }
+  if(x == "Your building and loan matures—Collect $150") {
+      p$money <- p$money + 150
+    }
+  if(x == "Bank pays you dividend of $50.") {
+      p$money <- p$money + 50
+    }
+  if(x=="Go to Jail-Go directly to Jail-Do not pass Go, do not collect $200.") {
+      p$position <- 11
+      p$money <- p$money - 50
+    }
+  if(x == "Go Back 3 Spaces."){
+    p$position <- p$position - 3
+  }
+  if(x == "Pay poor tax of $15"){
+    p$money <- p$money - 15
+  }
+  if(x =="Take a walk on the Boardwalk–Advance token to Boardwalk"){
+    p$position <-40
+  }
+  if( x =="You have been elected Chairman of the Board–Pay each player $50"){
+    p$money <- p$money - 200
+    p1$money <- p1$money + 50
+    p2$money <- p2$money + 50
+    p3$money <- p3$money + 50
+    p4$money <- p4$money + 50
+  }
+  if(x == "Advance to go (collect $200).") {
+      p$position <- 1
+      p$money <- p$money + 200
+    }
+  #should be working, but unsure
+  if(x == "Advance to St. Charles Place - If you pass Go, collect $200.") {
+     p$position <- 12
+    if(pos < p$position){
+		#player passed go
+		p$money<-p$money + 200
+    }	
+  if( x == "Advance to Illinois Ave - If you pass Go, collect $200.") {
+      p$position <- 25
+      if(pos < p$position){
+		#player passed go
+		p$money<-p$money + 200
+       }	
+    }
+  #not working
+  if(x == "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.") {
+    if( pos < 29 && pos > 13 ) {
+      p$position <- 29
+    }
+    else{
+      p$position <- 13
+    }
+  }
+ 
+  print(x)
   return(p)
-}
-}
+  }
+p4 <- drawChanceCard(p4)
+p4
 
+
+}
 
 
 ```
