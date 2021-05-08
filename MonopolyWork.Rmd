@@ -434,10 +434,11 @@ p4 <- drawChestCard(p4)
 #chance cards not yet in if statements c(  #"Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the #nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.", "Make general repairs on #all your property-For each house pay $25-For each hotel $100.","Take a trip to Reading Railroad–If you pass Go, collect $200.",)
 
 #function that randomly selects a card from the chance cards vector
-drawChanceCard <- function(p, pos)
+#function that randomly selects a card from the chance cards vector
+drawChanceCard <- function(p)
 {
-    x <- sample(chance,1)
-  
+    x <- "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown."
+    pos <- p$position
   if(x == "You have won a crossword competition—Collect $100") {
       p$money <- p$money + 100
     }
@@ -471,39 +472,59 @@ drawChanceCard <- function(p, pos)
       p$position <- 1
       p$money <- p$money + 200
     }
-  #should be working, but unsure
+  
   if(x == "Advance to St. Charles Place - If you pass Go, collect $200.") {
      p$position <- 12
-    if(pos < p$position){
+    if(pos > p$position){
 		#player passed go
 		p$money<-p$money + 200
     }	
+  }
   if( x == "Advance to Illinois Ave - If you pass Go, collect $200.") {
       p$position <- 25
-      if(pos < p$position){
+      if(pos > p$position){
 		#player passed go
-		p$money<-p$money + 200
+		  p$money<-p$money + 200
        }	
     }
-  #not working
+  #Needs buy and rent added!!
   if(x == "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.") {
-    if( pos < 29 && pos > 13 ) {
+    if(pos > 13 ) {
+      p$position <- 29
+    }
+    else if(pos > 29) {
       p$position <- 29
     }
     else{
       p$position <- 13
     }
   }
- 
+    #Needs rent/buy
+    if(x == "Advance token to the #nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.") {
+      if(p$position == 8) {
+        p$position <- 6
+      }
+      if(p$position == 23) {
+        p$position <- 26
+      }
+      if(p$position == 37) {
+        p$position <- 6
+        p$money <- p$money + 200
+      }
+    }
+    #needs rent/buy
+    if(x == "Take a trip to Reading Railroad–If you pass Go, collect $200.") {
+     p$position <- 6
+      if(pos > 6){
+		#player passed go
+		  p$money<-p$money + 200
+       }	 
+    }
   print(x)
   return(p)
-  }
+}
 p4 <- drawChanceCard(p4)
 p4
-
-
-}
-
 
 ```
 
