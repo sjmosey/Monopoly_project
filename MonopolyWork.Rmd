@@ -45,13 +45,12 @@ winner<-0 #this will be the global variable that stores the game winner's player
 position<-1
 money<-3000
 lastRollSum<-0 #will need if player lands on utility (they owe 4x amount of dice)
-properties<-0
 ID<-0
 turn<-0 #this will keep track of how many turns each player got to take
-p1<- data.frame(ID,turn,position, money,lastRollSum, properties)
-p2<- data.frame(ID,turn,position, money, lastRollSum,properties)
-p3<- data.frame(ID,turn,position, money,lastRollSum, properties)
-p4<- data.frame(ID,turn,position, money,lastRollSum, properties)
+p1<- data.frame(ID,turn,position, money,lastRollSum)
+p2<- data.frame(ID,turn,position, money, lastRollSum)
+p3<- data.frame(ID,turn,position, money,lastRollSum)
+p4<- data.frame(ID,turn,position, money,lastRollSum)
 p1$ID<-1
 p2$ID<-2
 p3$ID<-3
