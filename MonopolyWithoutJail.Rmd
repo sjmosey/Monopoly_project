@@ -198,90 +198,90 @@ drawChestCard <- function(p)
     }
   return(p)
 }
-drawChanceCard <- function(p)
-{
-    x <- sample(chestcards, 1, replace = TRUE)
-    pos <- p$position
-  if(x == "You have won a crossword competition—Collect $100") {
-      p$money <- p$money + 100
-    }
-  if(x == "Your building and loan matures—Collect $150") {
-      p$money <- p$money + 150
-    }
-  if(x == "Bank pays you dividend of $50.") {
-      p$money <- p$money + 50
-    }
-  if(x=="Go to Jail-Go directly to Jail-Do not pass Go, do not collect $200.") {
-      p$position <- 11
-      p$money <- p$money - 50
-    }
-  if(x == "Go Back 3 Spaces."){
-    p$position <- p$position - 3
-  }
-  if(x == "Pay poor tax of $15"){
-    p$money <- p$money - 15
-  }
-  if(x =="Take a walk on the Boardwalk–Advance token to Boardwalk"){
-    p$position <-40
-  }
-  if( x =="You have been elected Chairman of the Board–Pay each player $50"){
-    p$money <- p$money - 200
-    p1$money <- p1$money + 50
-    p2$money <- p2$money + 50
-    p3$money <- p3$money + 50
-    p4$money <- p4$money + 50
-  }
-  if(x == "Advance to go (collect $200).") {
-      p$position <- 1
-      p$money <- p$money + 50
-    }
-  
-  if(x == "Advance to St. Charles Place - If you pass Go, collect $200.") {
-     p$position <- 12
-    if(pos > p$position){
-		#player passed go
-		p$money<-p$money + 50
-    }	
-  }
-  if( x == "Advance to Illinois Ave - If you pass Go, collect $200.") {
-      p$position <- 25
-      if(pos > p$position){
-		#player passed go
-		  p$money<-p$money + 50
-       }	
-    }
-  if(x == "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.") {
-    if(pos > 13 ) {
-      p$position <- 29
-    }
-    else if(pos > 29) {
-      p$position <- 29
-    }
-    else{
-      p$position <- 13
-    }
-  }
-    if(x == "Advance token to the #nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.") {
-      if(p$position == 8) {
-        p$position <- 6
-      }
-      if(p$position == 23) {
-        p$position <- 26
-      }
-      if(p$position == 37) {
-        p$position <- 6
-        p$money <- p$money + 200
-      }
-    }
-    if(x == "Take a trip to Reading Railroad–If you pass Go, collect $200.") {
-     p$position <- 6
-      if(pos > 6){
-		#player passed go
-		  p$money<-p$money + 50
-       }	 
-    }
-  return(p)
-}
+# drawChanceCard <- function(p)
+# {
+#     x <- sample(chestcards, 1, replace = TRUE)
+#     pos <- p$position
+#   if(x == "You have won a crossword competition—Collect $100") {
+#       p$money <- p$money + 100
+#     }
+#   if(x == "Your building and loan matures—Collect $150") {
+#       p$money <- p$money + 150
+#     }
+#   if(x == "Bank pays you dividend of $50.") {
+#       p$money <- p$money + 50
+#     }
+#   if(x=="Go to Jail-Go directly to Jail-Do not pass Go, do not collect $200.") {
+#       p$position <- 11
+#       p$money <- p$money - 50
+#     }
+#   if(x == "Go Back 3 Spaces."){
+#     p$position <- p$position - 3
+#   }
+#   if(x == "Pay poor tax of $15"){
+#     p$money <- p$money - 15
+#   }
+#   if(x =="Take a walk on the Boardwalk–Advance token to Boardwalk"){
+#     p$position <-40
+#   }
+#   if( x =="You have been elected Chairman of the Board–Pay each player $50"){
+#     p$money <- p$money - 200
+#     p1$money <- p1$money + 50
+#     p2$money <- p2$money + 50
+#     p3$money <- p3$money + 50
+#     p4$money <- p4$money + 50
+#   }
+#   if(x == "Advance to go (collect $200).") {
+#       p$position <- 1
+#       p$money <- p$money + 50
+#     }
+#   
+#   if(x == "Advance to St. Charles Place - If you pass Go, collect $200.") {
+#      p$position <- 12
+#     if(pos > p$position){
+# 		#player passed go
+# 		p$money<-p$money + 50
+#     }	
+#   }
+#   if( x == "Advance to Illinois Ave - If you pass Go, collect $200.") {
+#       p$position <- 25
+#       if(pos > p$position){
+# 		#player passed go
+# 		  p$money<-p$money + 50
+#        }	
+#     }
+#   if(x == "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.") {
+#     if(pos > 13 ) {
+#       p$position <- 29
+#     }
+#     else if(pos > 29) {
+#       p$position <- 29
+#     }
+#     else{
+#       p$position <- 13
+#     }
+#   }
+#     if(x == "Advance token to the #nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.") {
+#       if(p$position == 8) {
+#         p$position <- 6
+#       }
+#       if(p$position == 23) {
+#         p$position <- 26
+#       }
+#       if(p$position == 37) {
+#         p$position <- 6
+#         p$money <- p$money + 200
+#       }
+#     }
+#     if(x == "Take a trip to Reading Railroad–If you pass Go, collect $200.") {
+#      p$position <- 6
+#       if(pos > 6){
+# 		#player passed go
+# 		  p$money<-p$money + 50
+#        }	 
+#     }
+#   return(p)
+# }
 addToPlayerVector<-function(p,pos) #checks what player is up and then updates location vectors
   {
     if(p$ID==1)
@@ -420,8 +420,8 @@ takeAction<-function(p)
       }
     if(isGoToJail(p,p$position))
       {
-      p$money<-p$money-50
-      p$position<-11
+      # p$money<-p$money-50
+      # p$position<-11
       return(p)
       }
     if(isJail(p$position)) #turn is over if player lands on jail space
@@ -452,7 +452,8 @@ takeAction<-function(p)
     }
   if(isChance(p$position))
       {
-      p<-drawChanceCard(p)
+      return(p)
+      #p<-drawChanceCard(p)
       }
     return(p)
   }
@@ -499,12 +500,12 @@ takeTurn<-function(p)#function that includes all other functions that one player
        d1<-roll()
        d2<-roll()
        p$lastRollSum<-d1+d2
-       if(d1==d2 & rollCount==3) #this means the player has rolled doubles 3 times and is going to jail
-         {
-         p$money<-p$money-50 #to get out of jail player pays a $50 fee
-         p$position<-11 #player goes to jail, tile 11
-         return(p) #player's turn is over
-       }
+       # if(d1==d2 & rollCount==3) #this means the player has rolled doubles 3 times and is going to jail
+       #   {
+       #   p$money<-p$money-50 #to get out of jail player pays a $50 fee
+       #   p$position<-11 #player goes to jail, tile 11
+       #   return(p) #player's turn is over
+       # }
        if(d1!=d2) #if if gets here, the player did not roll doubles and the loop will end after getDestination is called
          {
          isTurnDone = TRUE
@@ -538,13 +539,4 @@ p3vector
 p4vector
 ```
 
-
-
-```{r}
-#No Chance
-p1game1<-p1vector
-p2game1<-p2vector
-p3game1<-p3vector
-p4game1<-p4vector
-```
 
