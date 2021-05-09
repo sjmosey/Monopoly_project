@@ -157,13 +157,13 @@ drawChestCard <- function(p)
     x <- sample(chest,1, replace = TRUE)
     
     
-    if(x == "Advance to go (collect $200).") {
+    if(x == "Advance to go (collect $50).") {
       p$position <- 1
-      p$money <- p$money + 200
+      p$money <- p$money + 50
       
     }
-    if(x =="Bank error in your favor—Collect $200.") {
-      p$money <- p$money + 200
+    if(x =="Bank error in your favor—Collect $50.") {
+      p$money <- p$money + 50
       
     }
     if(x =="Doctor's fee—Pay $50.") {
@@ -174,7 +174,7 @@ drawChestCard <- function(p)
       p$money <- p$money +50
       
     }
-    if(x == "Go to Jail–Go directly to jail–Do not pass Go–Do not collect $200.") {
+    if(x == "Go to Jail–Go directly to jail–Do not pass Go–Do not collect $50.") {
       p$position <- 11
       p$money <- p$money - 50
       
@@ -248,21 +248,21 @@ drawChanceCard <- function(p)
   }
   if(x == "Advance to go (collect $200).") {
       p$position <- 1
-      p$money <- p$money + 200
+      p$money <- p$money + 50
     }
   
   if(x == "Advance to St. Charles Place - If you pass Go, collect $200.") {
      p$position <- 12
     if(pos > p$position){
 		#player passed go
-		p$money<-p$money + 200
+		p$money<-p$money + 50
     }	
   }
   if( x == "Advance to Illinois Ave - If you pass Go, collect $200.") {
       p$position <- 25
       if(pos > p$position){
 		#player passed go
-		  p$money<-p$money + 200
+		  p$money<-p$money + 50
        }	
     }
   if(x == "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.") {
@@ -292,10 +292,9 @@ drawChanceCard <- function(p)
      p$position <- 6
       if(pos > 6){
 		#player passed go
-		  p$money<-p$money + 200
+		  p$money<-p$money + 50
        }	 
     }
-  print(x)
   return(p)
 }
 addToPlayerVector<-function(p,pos) #checks what player is up and then updates location vectors
@@ -363,6 +362,10 @@ isProperty<-function(pos) #this function checks to see if the player is on a buy
   } 
 takeAction<-function(p)
   {
+    if(p$position==0)
+      {
+      p$position<-p$position+1
+      }
     if(isProperty(p$position)) 
       {
       ownerid<-getOwner(board,p$position) #checks if someone owns the property by looking at the ownerID column of the board data frame
@@ -395,16 +398,8 @@ takeAction<-function(p)
             return(p)
             }
          }
-    }
-    if(isCommunityChest(p$position))
-    {
-      p<-drawChestCard(p)
-    }
-   if(isChance(p$position))
-    {
-       p <-drawChanceCard(p)
-    }  
-  if(isUtility(p$position))
+      }
+    if(isUtility(p$position))
       {
       ownerid<-getOwner(board,p$position) #checks if someone owns the property by looking at the ownerID column of the board data frame
       if(p$ID==ownerid) #this means the player already owns the property and their turn is over
@@ -456,7 +451,10 @@ takeAction<-function(p)
       {
       return(p)
       }
-    
+    if(isCommunityChest(p$position))
+      {
+      p<-drawChestCard(p)
+      }
   if(isIncomeTax(p,p$position))
     {
     p$money<-p$money-200 #pays $200 tax
@@ -467,14 +465,17 @@ takeAction<-function(p)
     p$money<-p$money-75 #pays $75 tax
     return(p)
     }
-  
+  if(isChance(p$position))
+      {
+      p<-drawChanceCard(p)
+      }
     return(p)
   }
 move<-function(p, pos) #function that updates the position of the player
   {
 	if(pos < p$position)
 	  {
-		p$money<-p$money + 200 #player passed go
+		p$money<-p$money + 50 #player passed go
     }	
 	p$position<-pos
 	p<-takeAction(p)
@@ -482,6 +483,10 @@ move<-function(p, pos) #function that updates the position of the player
 }
 getDesination<-function(pos, dicesum) #function that gets the board position from adding the sum of the dice to current player position
     { 
+    if(pos==0)
+      {
+      pos<-pos+1
+      }
     return((pos + dicesum) %% 40)
     }
 
@@ -519,31 +524,28 @@ takeTurn<-function(p)#function that includes all other functions that one player
          {
          isTurnDone = TRUE
        }
-      newPos<- getDesination(p$position, dicesum<-d1+d2)
+      newPos<-getDesination(p$position, dicesum<-d1+d2)
       addToPlayerVector(p,newPos)
       p<-move(p, newPos)
     } 
   return(p)
 }
 
-# for(i in 1:10){
-# p1<-takeTurn(p1)
-# isGameOver()
-# p2<-takeTurn(p2)
-# isGameOver()
-# p3<-takeTurn(p3)
-# isGameOver()
-# p4<-takeTurn(p4)
-# isGameOver()
-# }
-# p1
-# p2
-# p3
-# p4
-
+while(isGameOver()==FALSE)
+  {
 p1<-takeTurn(p1)
 isGameOver()
+p2<-takeTurn(p2)
+isGameOver()
+p3<-takeTurn(p3)
+isGameOver()
+p4<-takeTurn(p4)
+isGameOver()
+}
 p1
+p2
+p3
+p4
 
 
 ```
