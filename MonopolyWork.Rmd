@@ -8,9 +8,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-# creating the board
+#creating the board
 tiles <- c("GO", "Mediterranean Avenue", "Community Chest", "Baltic Avenue", "Income Tax", "Reading Railroad", "Oriental Avenue","Chance","Vermont Avenue", "Connecticut Avenue", "Jail", "St. Charles Place", "Electric Company", "States Avenue", "Virginia Avenue","Pennsylvania Railroad", "St. James Place", "Community Chest","Tennessee Avenue","New York Avenue","Free Parking","Kentucky Avenue","Chance","Indiana Avenue","Illinois Avenue","B. & O. Railroad","Atlantic Avenue","Ventnor Avenue", "Water Works", "Marvin Gardens","Go To Jail","Pacific Avenue","North Carolina Avenue", "Community Chest", "Pennsylvania Avenue","Short Line", "Chance","Park Place", "Luxury Tax", "Boardwalk")
-
 prices <- c("0","60","0","60","0","200","100","0","100","120","0","140","150","140","160","200","180","0","180","200","0","220","0","220","240","200","260","260","150","280","0","300","300","0","320","200","0","350","0","400")
 prices <- as.numeric(prices)
 #For rent that depends on 4 times the dice roll we preset the dice roll to be 7 as that is the most common 2 sided dice roll.
@@ -18,16 +17,20 @@ rent <- c("0","2","0","4","0","25","6","0","6","8","0","10","28","10","12","25",
 rent <- as.numeric(rent)
 ownerID<-rep(c(0),times=40)
 board <- data.frame(numeric_tile = 1:40, tiles, prices,rent,ownerID)
-board
-  
+(board)
+
 #creating deck of chance cards
 chance <- c("Advance to go (collect $200).", "Advance to Illinois Ave - If you pass Go, collect $200.", "Advance to St. Charles Place - If you pass Go, collect $200.", "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.", "Bank pays you dividend of $50.", "Get Out of Jail Free.", "Go Back 3 Spaces.", "Go to Jail-Go directly to Jail-Do not pass Go, do not collect $200.", "Make general repairs on all your property-For each house pay $25-For each hotel $100.","Pay poor tax of $15","Take a trip to Reading Railroad–If you pass Go, collect $200.","Take a walk on the Boardwalk–Advance token to Boardwalk","You have been elected Chairman of the Board–Pay each player $50","Your building and loan matures—Collect $150","You have won a crossword competition—Collect $100")
+
 chancecards <- data.frame(card_number = 1:16, chance)
 
 #creating deck of community chest. Removed get out of jail free card and hotel/ house assessment cards
 chest <- c("Advance to Go (Collect $200).","Bank error in your favor—Collect $200.","Doctor's fee—Pay $50.","From sale of stock you get $50.","Go to Jail–Go directly to jail–Do not pass Go–Do not collect $200.","Grand Opera Night—Collect $50 from every player for opening night seats.","Holiday Fund matures—Receive $100.","Income tax refund–Collect $20.","Life insurance matures–Collect $100.","Pay hospital fees of $100.","Pay school fees of $150.","Receive from services $25.","You have won second prize in a beauty contest–Collect $10.","You inherit $100.")
 
 chestcards <- data.frame(card_number = 1:14, chest)
+
+winner<-0 #this will be the global variable that stores the game winner's player ID
+
 position<-1
 money<-3000
 lastRollSum<-0 #will need if player lands on utility (they owe 4x amount of dice)
@@ -54,6 +57,51 @@ loclogp3 = as.vector(board$tiles[1])
 loclogp4 = as.vector(board$tiles[1])
 
 
+getWinner<-function() #once we know the game has a winner, this function determines who that is and sets the global variable, winner, equal to the winner's player ID
+  {
+  if(p1$money!=0)
+    {
+    winner<<-1
+    }
+  if(p2$money!=0)
+    {
+    winner<<-2
+    }
+  if(p3$money!=0)
+    {
+    winner<<-3
+    }
+  if(p4$money!=0)
+    {
+    winner<<-4
+    }
+  }
+isGameOver<-function() #after each turn, check is we have a winner (only one player left with money)
+  {
+  hasmoney<-0
+  if(p1$money>0)
+    {
+    hasmoney<-hasmoney+1
+    }
+  if(p2$money>0)
+    {
+    hasmoney<-hasmoney+1
+    }
+  if(p3$money>0)
+    {
+    hasmoney<-hasmoney+1
+    }
+  if(p4$money>0)
+    {
+    hasmoney<-hasmoney+1
+    }
+  if(hasmoney==1) #if has money equals one, only one person has money left, therefore, they are the winner
+    {
+    getWinner() 
+    return(TRUE)
+    }
+  return(FALSE)
+  }
 payPlayer<-function(id,amount) #checks who the owner is and pays them
   {
   if(id==1)
@@ -172,6 +220,18 @@ addToPlayerVector<-function(p,pos) #checks what player is up and then updates lo
       p4vector<<-append(p4vector,p$position)
       loclogp4<<-append(loclogp4,tiles[pos])
       }
+}
+isLuxuryTax<-function(p,pos) #function checks to see if the player has landed on the luxury tax space
+  {
+  return(pos==39)
+  }
+isIncomeTax<-function(p,pos) #function checks to see if the player has landed on the income tax space
+  {
+  return(pos==5)
+  }
+isFreeParking<-function(pos) #function checks to see if the player has landed on free parking
+  {
+  return(pos==21)
   }
 isCommunityChest<-function(pos) #checks if they are on community chest
   {
@@ -235,7 +295,6 @@ takeAction<-function(p)
             return(p)
             }
          }
-      
       }
     if(isUtility(p$position))
       {
@@ -277,18 +336,32 @@ takeAction<-function(p)
       p$position<-11
       return(p)
       }
-    if(isJail(p$position))  
+    if(isJail(p$position)) #turn is over if player lands on jail space
       {
       return(p)
       }
-    if(isGo(p$position))
+    if(isGo(p$position)) #turn is over if player lands on Go
       {
       return(p)
       }
-    if(isCommunity(p$position))
+    if(isFreeParking(p$position)) #turn is over if player lands on free parking
+      {
+      return(p)
+      }
+    if(isCommunityChest(p$position))
       {
       p<-drawChestCard(p)
       }
+  if(isIncomeTax(p,p$position))
+    {
+    p$money<-p$money-200 #pays $200 tax
+    return(p)
+    }
+  if(isIncomeTax(p,p$position))
+    {
+    p$money<-p$money-75 #pays $75 tax
+    return(p)
+    }
   # if(isChance(p$position))
   #     {
   #     return(p)
@@ -322,7 +395,6 @@ isDone<-function(p) #function checks if player taking a turn is out of money or 
   
 takeTurn<-function(p)#function that includes all other functions that one player will go through for a turn
 {
-  #browser()
   if(isDone(p)){
     return(p)
   }
@@ -331,16 +403,15 @@ takeTurn<-function(p)#function that includes all other functions that one player
     rollCount <- 0 #keeps track of how many rolls
     while(!isTurnDone) #loops to roll dice until thet do not get doubles
       { 
-      #browser()
        rollCount<-rollCount+1
        d1<-roll()
        d2<-roll()
        p$lastRollSum<-d1+d2
-       if(d1==d2 & rollCount==3) #this means the player has rolled doubles twice and right now it just ends the players turn
+       if(d1==d2 & rollCount==3) #this means the player has rolled doubles 3 times and is going to jail
          {
-         p$money<-p$money-50
-         p$position<-11
-         return(p)
+         p$money<-p$money-50 #to get out of jail player pays a $50 fee
+         p$position<-11 #player goes to jail, tile 11
+         return(p) #player's turn is over
        }
        if(d1!=d2) #if if gets here, the player did not roll doubles and the loop will end after getDestination is called
          {
@@ -355,10 +426,21 @@ takeTurn<-function(p)#function that includes all other functions that one player
 
 # for(i in 1:10){
 # p1<-takeTurn(p1)
+# isGameOver()
+# p2<-takeTurn(p2)
+# isGameOver()
+# p3<-takeTurn(p3)
+# isGameOver()
+# p4<-takeTurn(p4)
+# isGameOver()
 # }
 # p1
+# p2
+# p3
+# p4
 
 p1<-takeTurn(p1)
+isGameOver()
 p1
 
 #chance and community chest
