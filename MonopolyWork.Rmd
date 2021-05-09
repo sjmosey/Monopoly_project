@@ -258,7 +258,6 @@ drawChanceCard <- function(p)
 		  p$money<-p$money + 200
        }	
     }
-  #Needs buy and rent added!!
   if(x == "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.") {
     if(pos > 13 ) {
       p$position <- 29
@@ -270,7 +269,6 @@ drawChanceCard <- function(p)
       p$position <- 13
     }
   }
-    #Needs rent/buy
     if(x == "Advance token to the #nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.") {
       if(p$position == 8) {
         p$position <- 6
@@ -283,7 +281,6 @@ drawChanceCard <- function(p)
         p$money <- p$money + 200
       }
     }
-    #needs rent/buy
     if(x == "Take a trip to Reading Railroad–If you pass Go, collect $200.") {
      p$position <- 6
       if(pos > 6){
@@ -391,8 +388,16 @@ takeAction<-function(p)
             return(p)
             }
          }
-      }
-    if(isUtility(p$position))
+    }
+    if(isCommunityChest(p$position))
+    {
+      p<-drawChestCard(p)
+    }
+   if(isChance(p$position))
+    {
+       p <-drawChanceCard(p)
+    }  
+  if(isUtility(p$position))
       {
       ownerid<-getOwner(board,p$position) #checks if someone owns the property by looking at the ownerID column of the board data frame
       if(p$ID==ownerid) #this means the player already owns the property and their turn is over
@@ -444,10 +449,7 @@ takeAction<-function(p)
       {
       return(p)
       }
-    if(isCommunityChest(p$position))
-      {
-      p<-drawChestCard(p)
-      }
+    
   if(isIncomeTax(p,p$position))
     {
     p$money<-p$money-200 #pays $200 tax
@@ -458,10 +460,7 @@ takeAction<-function(p)
     p$money<-p$money-75 #pays $75 tax
     return(p)
     }
-  # if(isChance(p$position))
-  #     {
-  #     return(p)
-  #     }
+  
     return(p)
   }
 move<-function(p, pos) #function that updates the position of the player
