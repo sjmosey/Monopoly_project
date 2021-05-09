@@ -6,7 +6,18 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+1. _Rules!_ Monopoly has several rules related to movement around the game board. Movement is affected by standard dice rolls, special conditions for some dice rolls, and game cards. Find and summarize these rules. 
 
+SET UP: Each player is given $3,00 and starts on GO (position 1).
+GAME PLAY: Player one goes first followed by player 2, player 3, and then player 4. Each player rolls the dice on their turn and follows the instructions for the place they land on.
+ROLLING DOUBLES: Players who roll doubles must roll again. Players move their piece and follow instructions of the space they land on between rolls. 3 sets of doubles send the player to jail. 
+SPECIAL SPACES:
+GO: Every time players pass go they collect $50.
+PROPERTIES: Players must buy a property if they have enough money to. If a player lands on a property another player owns they must pay the specified rent amount.
+JAIL: Players who get sent to jail must pay the $50 fee to begin their next turn and their position is reset to jail.
+GAME END: The game ends when only one player remains. Each player gets eliminated when the money in their account reaches $0 or below.
+
+SPECIAL RULES: Houses and hotels have been removed. Likewise so have hotel and house related chance and community chest cards. Get out of jail free cards have been removed for simplicity as well. Players cannot roll doubles to get out of jail, they must pay the fee. Auctions have been removed as well as selling/mortgaging properties.
 ```{r}
 #creating the board
 tiles <- c("GO", "Mediterranean Avenue", "Community Chest", "Baltic Avenue", "Income Tax", "Reading Railroad", "Oriental Avenue","Chance","Vermont Avenue", "Connecticut Avenue", "Jail", "St. Charles Place", "Electric Company", "States Avenue", "Virginia Avenue","Pennsylvania Railroad", "St. James Place", "Community Chest","Tennessee Avenue","New York Avenue","Free Parking","Kentucky Avenue","Chance","Indiana Avenue","Illinois Avenue","B. & O. Railroad","Atlantic Avenue","Ventnor Avenue", "Water Works", "Marvin Gardens","Go To Jail","Pacific Avenue","North Carolina Avenue", "Community Chest", "Pennsylvania Avenue","Short Line", "Chance","Park Place", "Luxury Tax", "Boardwalk")
@@ -137,7 +148,6 @@ getOwner<-function(board,pos)
 }
 drawChestCard <- function(p)
   {
-  #browser()
     x <- sample(chest,1, replace = TRUE)
     
     
@@ -195,7 +205,94 @@ drawChestCard <- function(p)
     if(x == "You inherit $100.") {
       p$money <- p$money + 100
     }
-    #prin(x)
+  return(p)
+}
+drawChanceCard <- function(p)
+{
+    x <- sample(chestcards, 1, replace = TRUE)
+    pos <- p$position
+  if(x == "You have won a crossword competition—Collect $100") {
+      p$money <- p$money + 100
+    }
+  if(x == "Your building and loan matures—Collect $150") {
+      p$money <- p$money + 150
+    }
+  if(x == "Bank pays you dividend of $50.") {
+      p$money <- p$money + 50
+    }
+  if(x=="Go to Jail-Go directly to Jail-Do not pass Go, do not collect $200.") {
+      p$position <- 11
+      p$money <- p$money - 50
+    }
+  if(x == "Go Back 3 Spaces."){
+    p$position <- p$position - 3
+  }
+  if(x == "Pay poor tax of $15"){
+    p$money <- p$money - 15
+  }
+  if(x =="Take a walk on the Boardwalk–Advance token to Boardwalk"){
+    p$position <-40
+  }
+  if( x =="You have been elected Chairman of the Board–Pay each player $50"){
+    p$money <- p$money - 200
+    p1$money <- p1$money + 50
+    p2$money <- p2$money + 50
+    p3$money <- p3$money + 50
+    p4$money <- p4$money + 50
+  }
+  if(x == "Advance to go (collect $200).") {
+      p$position <- 1
+      p$money <- p$money + 200
+    }
+  
+  if(x == "Advance to St. Charles Place - If you pass Go, collect $200.") {
+     p$position <- 12
+    if(pos > p$position){
+		#player passed go
+		p$money<-p$money + 200
+    }	
+  }
+  if( x == "Advance to Illinois Ave - If you pass Go, collect $200.") {
+      p$position <- 25
+      if(pos > p$position){
+		#player passed go
+		  p$money<-p$money + 200
+       }	
+    }
+  #Needs buy and rent added!!
+  if(x == "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.") {
+    if(pos > 13 ) {
+      p$position <- 29
+    }
+    else if(pos > 29) {
+      p$position <- 29
+    }
+    else{
+      p$position <- 13
+    }
+  }
+    #Needs rent/buy
+    if(x == "Advance token to the #nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.") {
+      if(p$position == 8) {
+        p$position <- 6
+      }
+      if(p$position == 23) {
+        p$position <- 26
+      }
+      if(p$position == 37) {
+        p$position <- 6
+        p$money <- p$money + 200
+      }
+    }
+    #needs rent/buy
+    if(x == "Take a trip to Reading Railroad–If you pass Go, collect $200.") {
+     p$position <- 6
+      if(pos > 6){
+		#player passed go
+		  p$money<-p$money + 200
+       }	 
+    }
+  print(x)
   return(p)
 }
 addToPlayerVector<-function(p,pos) #checks what player is up and then updates location vectors
@@ -443,170 +540,6 @@ p1<-takeTurn(p1)
 isGameOver()
 p1
 
-#chance and community chest
-#function that randomly selects a card from the chest cards vector
-
-#chance and community chest
-#function that randomly selects a card from the chest cards vector
-
-drawChestCard <- function(p)
-  {
-    x <- sample(chest,1, replace = TRUE)
-    
-    
-    if(x == "Advance to go (collect $200).") {
-      p$position <- 1
-      p$money <- p$money + 200
-      
-    }
-    if(x =="Bank error in your favor—Collect $200.") {
-      p$money <- p$money + 200
-      
-    }
-    if(x =="Doctor's fee—Pay $50.") {
-      p$money <- p$money - 50
-      
-    }
-    if(x == "From sale of stock you get $50.") {
-      p$money <- p$money +50
-      
-    }
-    if(x == "Go to Jail–Go directly to jail–Do not pass Go–Do not collect $200.") {
-      p$position <- 11
-      p$money <- p$money - 50
-      
-    }
-    if(x=="Grand Opera Night—Collect $50 from every player for opening night seats.") {
-      p1$money <- p1$money - 50
-      p2$money <- p2$money - 50
-      p3$money <- p2$money - 50
-      p4$money <- p4$money - 50
-     
-      p$money <- p$money + 200
-    }
-    if(x == "Holiday Fund matures—Receive $100.") {
-      p$money <- p$money + 100
-    }
-    if(x == "Income tax refund–Collect $20.") {
-      p$money <- p$money + 20
-    }
-    if(x == "Life insurance matures–Collect $100.") {
-      p$money <- p$money + 100
-    }
-    if(x == "Pay hospital fees of $100.") {
-      p$money <- p$money - 100
-    }
-    if(x == "Pay school fees of $150.") {
-      p$money <- p$money - 150
-    }
-    if(x == "Receive from services $25.") {
-      p$money <- p$money + 25
-    }
-    if(x == "You have won second prize in a beauty contest–Collect $10.") {
-      p$money <- p$money + 10
-    }
-    if(x == "You inherit $100.") {
-      p$money <- p$money + 100
-    }
-  print(x)
-  return(p)
-}
-p4 <- drawChestCard(p4)
-
-#chance cards not yet in if statements c(  #"Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the #nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.", "Make general repairs on #all your property-For each house pay $25-For each hotel $100.","Take a trip to Reading Railroad–If you pass Go, collect $200.",)
-
-#function that randomly selects a card from the chance cards vector
-#function that randomly selects a card from the chance cards vector
-drawChanceCard <- function(p)
-{
-    x <- "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown."
-    pos <- p$position
-  if(x == "You have won a crossword competition—Collect $100") {
-      p$money <- p$money + 100
-    }
-  if(x == "Your building and loan matures—Collect $150") {
-      p$money <- p$money + 150
-    }
-  if(x == "Bank pays you dividend of $50.") {
-      p$money <- p$money + 50
-    }
-  if(x=="Go to Jail-Go directly to Jail-Do not pass Go, do not collect $200.") {
-      p$position <- 11
-      p$money <- p$money - 50
-    }
-  if(x == "Go Back 3 Spaces."){
-    p$position <- p$position - 3
-  }
-  if(x == "Pay poor tax of $15"){
-    p$money <- p$money - 15
-  }
-  if(x =="Take a walk on the Boardwalk–Advance token to Boardwalk"){
-    p$position <-40
-  }
-  if( x =="You have been elected Chairman of the Board–Pay each player $50"){
-    p$money <- p$money - 200
-    p1$money <- p1$money + 50
-    p2$money <- p2$money + 50
-    p3$money <- p3$money + 50
-    p4$money <- p4$money + 50
-  }
-  if(x == "Advance to go (collect $200).") {
-      p$position <- 1
-      p$money <- p$money + 200
-    }
-  
-  if(x == "Advance to St. Charles Place - If you pass Go, collect $200.") {
-     p$position <- 12
-    if(pos > p$position){
-		#player passed go
-		p$money<-p$money + 200
-    }	
-  }
-  if( x == "Advance to Illinois Ave - If you pass Go, collect $200.") {
-      p$position <- 25
-      if(pos > p$position){
-		#player passed go
-		  p$money<-p$money + 200
-       }	
-    }
-  #Needs buy and rent added!!
-  if(x == "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.") {
-    if(pos > 13 ) {
-      p$position <- 29
-    }
-    else if(pos > 29) {
-      p$position <- 29
-    }
-    else{
-      p$position <- 13
-    }
-  }
-    #Needs rent/buy
-    if(x == "Advance token to the #nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.") {
-      if(p$position == 8) {
-        p$position <- 6
-      }
-      if(p$position == 23) {
-        p$position <- 26
-      }
-      if(p$position == 37) {
-        p$position <- 6
-        p$money <- p$money + 200
-      }
-    }
-    #needs rent/buy
-    if(x == "Take a trip to Reading Railroad–If you pass Go, collect $200.") {
-     p$position <- 6
-      if(pos > 6){
-		#player passed go
-		  p$money<-p$money + 200
-       }	 
-    }
-  print(x)
-  return(p)
-}
-p4 <- drawChanceCard(p4)
-p4
 
 ```
 
