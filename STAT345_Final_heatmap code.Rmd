@@ -11,18 +11,25 @@ font: 12pt
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r}
+#load in packages
 library(ggplot2)
 library(reshape2)
 library(cowplot)
 library(dplyr)
 library(viridisLite)
 
+#converts vector of tiles for each player into one vector
 freq_vect <- c(p1vector, p2vector, p3vector, p4vector, )
+
+#puts vector into data frame
 freq_data <- as.data.frame(table(freq_vect))
 ```
 
 ```{r}
+#initialize boad_freq
 board_freq <- rnorm(121)
+
+#manuel assignement of tile frequencies to the heat map data
   board_freq[1] <- freq_data$Freq[11]
   board_freq[2] <- freq_data$Freq[10]
   board_freq[3] <- freq_data$Freq[9]
@@ -67,19 +74,20 @@ board_freq <- rnorm(121)
 
 
 ```{r}
+#heat map monopoly board pattern is set
 board_alpha <- c(.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7)
 
+#creating geom_tile dataframe (11x11 board)
 board_df <- data.frame(x=rep(1:11, times=11), y=rep(1:11, each=11), board_freq) 
 
+#creates geom_tile in shape of monopoly board
 p <- ggplot(board_df, aes(x=x, y=y, fill=board_freq)) + geom_tile(alpha=board_alpha) + theme_void() + coord_equal() + scale_fill_gradient2(low = "white", mid = "yellow", high = "darkred") + labs(fill = "Tile Frequency") + theme(legend.position = c(1.2, .6)) 
 
+#saves monopoly board image to 'board'
 board <- system.file("monopoly_board.jpg")
 
-
-
+#draws monopoly board with geom_tile heat map above it
 ggdraw() + 
-
  draw_image("monopoly_board.jpg", scale=1.01, hjust=.0025, vjust=-.005) +
-
 draw_plot(p)
 ```
