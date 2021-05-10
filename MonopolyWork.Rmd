@@ -18,39 +18,32 @@ JAIL: Players who get sent to jail must pay the $50 fee to begin their next turn
 GAME END: The game ends when only one player remains. Each player gets eliminated when the money in their account reaches $0 or below.
 
 SPECIAL RULES: Houses and hotels have been removed. Likewise so have hotel and house related chance and community chest cards. Get out of jail free cards have been removed for simplicity as well. Players cannot roll doubles to get out of jail, they must pay the fee. Auctions have been removed as well as selling/mortgaging properties.
-2. _Let's Get Moving_ Build a system that allows for up to 4 players to move around the game board. As a first attempt, focus on standard dice rolls, ignoring additional rules related to rolling doubles, jail, or special cards. Which properties are landed on most frequently? Create a visualization for this!
-3. _Double Down_ Improve your system to incorporate going to jail, including the doubles-rolling condition. Which properties are landed on most frequently now? Has this changed dramatically from the previous system (that didn't account for jail)? Again, visualize this!
-
-4. _Take a Chance_ Incorporate the movement cards into your system. You can ignore the effects of non-movement cards, but not their existence! Which properties are landed on most frequently now? Has this changed dramatically from the previous system (that didn't account for Chance)? Again, visualize this!
-
-5. _Play a Game_ Extend your system to allow for up to 4 players to "play" the game. You may choose a reasonable starting board and player money level (so, you don't have to buy properties). Include payments between players, payments to the bank, and payments from the bank (there are several cards that will effect these that you should account for). You do not need to consider mortgaging properties (so a player loses when their liquid cash has run out). How long do games typically last given your starting board and money level? How does this change if money paid to the bank is placed in "Free Parking" and awarded to players landing on that space?
 
 ```{r}
 #creating the board
 tiles <- c("GO", "Mediterranean Avenue", "Community Chest", "Baltic Avenue", "Income Tax", "Reading Railroad", "Oriental Avenue","Chance","Vermont Avenue", "Connecticut Avenue", "Jail", "St. Charles Place", "Electric Company", "States Avenue", "Virginia Avenue","Pennsylvania Railroad", "St. James Place", "Community Chest","Tennessee Avenue","New York Avenue","Free Parking","Kentucky Avenue","Chance","Indiana Avenue","Illinois Avenue","B. & O. Railroad","Atlantic Avenue","Ventnor Avenue", "Water Works", "Marvin Gardens","Go To Jail","Pacific Avenue","North Carolina Avenue", "Community Chest", "Pennsylvania Avenue","Short Line", "Chance","Park Place", "Luxury Tax", "Boardwalk")
+#holds prices of the properties
 prices <- c("0","60","0","60","0","200","100","0","100","120","0","140","150","140","160","200","180","0","180","200","0","220","0","220","240","200","260","260","150","280","0","300","300","0","320","200","0","350","0","400")
 prices <- as.numeric(prices)
 #For rent that depends on 4 times the dice roll we preset the dice roll to be 7 as that is the most common 2 sided dice roll.
 rent <- c("0","2","0","4","0","25","6","0","6","8","0","10","28","10","12","25","14","0","14","16","0","18","0","18","20","25","22","22","28","24","0","26","26","0","28","28","0","35","0","50")
 rent <- as.numeric(rent)
+#Creates owner ID vector initialized with 0 40 times.
 ownerID<-rep(c(0),times=40)
+#compiles the tiles, prices, and rent into a data frame. Asigns them numbers 1-40. Adds in the owner ID column to be appended later.
 board <- data.frame(numeric_tile = 1:40, tiles, prices,rent,ownerID)
-(board)
 
-#creating deck of chance cards
-chance <- c("Advance to go (collect $200).", "Advance to Illinois Ave - If you pass Go, collect $200.", "Advance to St. Charles Place - If you pass Go, collect $200.", "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.", "Bank pays you dividend of $50.", "Get Out of Jail Free.", "Go Back 3 Spaces.", "Go to Jail-Go directly to Jail-Do not pass Go, do not collect $200.", "Make general repairs on all your property-For each house pay $25-For each hotel $100.","Pay poor tax of $15","Take a trip to Reading Railroad–If you pass Go, collect $200.","Take a walk on the Boardwalk–Advance token to Boardwalk","You have been elected Chairman of the Board–Pay each player $50","Your building and loan matures—Collect $150","You have won a crossword competition—Collect $100")
 
-chancecards <- data.frame(card_number = 1:16, chance)
-
-#creating deck of community chest. Removed get out of jail free card and hotel/ house assessment cards
+#creating deck of chance cards-removed get out of jail free and hotel related cards (uses or doesn't based on simulation)
+chance <- c("Advance to go (collect $200).", "Advance to Illinois Ave - If you pass Go, collect $200.", "Advance to St. Charles Place - If you pass Go, collect $200.", "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.", "Bank pays you dividend of $50.", "Go Back 3 Spaces.", "Go to Jail-Go directly to Jail-Do not pass Go, do not collect $200.","Pay poor tax of $15","Take a trip to Reading Railroad–If you pass Go, collect $200.","Take a walk on the Boardwalk–Advance token to Boardwalk","You have been elected Chairman of the Board–Pay each player $50","Your building and loan matures—Collect $150","You have won a crossword competition—Collect $100")
+chancecards <- data.frame(card_number = 1:14, chance)
+#creating deck of community chest. Removed get out of jail free card and hotel/ house assessment cards (uses or doesn't based on simulation)
 chest <- c("Advance to Go (Collect $200).","Bank error in your favor—Collect $200.","Doctor's fee—Pay $50.","From sale of stock you get $50.","Go to Jail–Go directly to jail–Do not pass Go–Do not collect $200.","Grand Opera Night—Collect $50 from every player for opening night seats.","Holiday Fund matures—Receive $100.","Income tax refund–Collect $20.","Life insurance matures–Collect $100.","Pay hospital fees of $100.","Pay school fees of $150.","Receive from services $25.","You have won second prize in a beauty contest–Collect $10.","You inherit $100.")
-
 chestcards <- data.frame(card_number = 1:14, chest)
-
 winner<-0 #this will be the global variable that stores the game winner's player ID
 
 position<-1
-money<-1000
+money<-500
 lastRollSum<-0 #will need if player lands on utility (they owe 4x amount of dice)
 ID<-0
 turn<-0 #this will keep track of how many turns each player got to take
@@ -72,8 +65,368 @@ loclogp1 = as.vector(board$tiles[1])
 loclogp2 = as.vector(board$tiles[1])
 loclogp3 = as.vector(board$tiles[1])
 loclogp4 = as.vector(board$tiles[1])
+```
+2. _Let's Get Moving_ Build a system that allows for up to 4 players to move around the game board. As a first attempt, focus on standard dice rolls, ignoring additional rules related to rolling doubles, jail, or special cards. Which properties are landed on most frequently? Create a visualization for this!
+```{R}
+#once we know the game has a winner, this function determines who that is and sets the global variable, winner, equal to the winner's player ID. The winner is the player with money left.
+#this function takes no inputs
+#Function outputs a winner either 1,2,3, or 4.
+getWinner<-function() 
+  {
+  if(p1$money!=0)
+    {
+    winner<<-1
+    }
+  if(p2$money!=0)
+    {
+    winner<<-2
+    }
+  if(p3$money!=0)
+    {
+    winner<<-3
+    }
+  if(p4$money!=0)
+    {
+    winner<<-4
+    }
+}
+#after each turn, check is we have a winner (only one player left with money).
+#Takes no inputs
+#doesn't output anything, but allows the game to continue or calls the getWinner function.
+isGameOver<-function() 
+  {
+  hasmoney<-0
+  if(p1$money>0)
+    {
+    hasmoney<-hasmoney+1
+    }
+  if(p2$money>0)
+    {
+    hasmoney<-hasmoney+1
+    }
+  if(p3$money>0)
+    {
+    hasmoney<-hasmoney+1
+    }
+  if(p4$money>0)
+    {
+    hasmoney<-hasmoney+1
+    }
+  if(hasmoney==1) #if has money equals one, only one person has money left, therefore, they are the winner
+    {
+    getWinner() 
+    return(TRUE)
+    }
+  return(FALSE)
+}
+#checks who the owner is and pays them when a player lands on a property.
+#takes a player ID and the amount owed
+#doesn't output anything, but changed the players dataframes to reflect money changes
+payPlayer<-function(id,amount) #checks who the owner is and pays them
+  {
+  if(id==1)
+    {
+    p1$money<<-p1$money+amount
+    }
+  if(id==2)
+    {
+    p2$money<<-p2$money+amount
+    }
+  if(id==3)
+    {
+    p3$money<<-p3$money+amount
+    }
+  if(id==4)
+    {
+    p4$money<<-p4$money+amount
+    }
+}
+#Function for when players don't have enough money
+#Takes a player(p), to which is what player, and the amount needed (only enough to return their money to 0)
+#Doesn't outpout anything but updats the player's data frame with enough money
 
-
+transferMoney<-function(p,to,amount)
+  {
+  if(p$money < amount) #if player doesn't have enough to pay full price, pay what they have
+    {
+    amount<-p$money
+    }
+  p$money<-p$money-amount #subtracting the amount from the player who is paying
+  payPlayer(to,amount)
+  return(p)
+}
+#Function to check the owner of a spot by looking at the owner ID column in the board data frame.
+#takes the board data frame and a position (pos)
+#Returns the owner of the spot
+getOwner<-function(board,pos) 
+  {
+  return(board$ownerID[pos])
+}
+#Function that check which player's turn it is and then updates the location vectors
+#Takes a player datta frame p and a position pos
+#Outputs nothing but identifies whos turn it is
+addToPlayerVector<-function(p,pos) #checks what player is up and then updates location vectors
+  {
+    if(p$ID==1)
+      {
+      p1vector<<-append(p1vector,pos) #updates the player vector list of locations using tile number
+      loclogp1<<-append(loclogp1,tiles[pos]) #updates the player vector list of locations using tile name
+    }
+    if(p$ID==2)
+      {
+      p2vector<<-append(p2vector,pos)
+      loclogp2<<-append(loclogp2,tiles[pos])
+      }
+    if(p$ID==3)
+      {
+      p3vector<<-append(p3vector,p$position)
+      loclogp3<<-append(loclogp3,tiles[pos])
+      }
+   if(p$ID==4)
+      {
+      p4vector<<-append(p4vector,p$position)
+      loclogp4<<-append(loclogp4,tiles[pos])
+      }
+}
+#Function to check if it is on the luxuary tax position
+#takes a players data frame p and position pos
+#outputs nothing but identifies the tile location
+isLuxuryTax<-function(p,pos) #function checks to see if the player has landed on the luxury tax space
+  {
+  return(pos==39)
+}
+#Function to check if it is on the income tax position
+#takes a players data frame p and position pos
+#outputs nothing but identifies the tile location
+isIncomeTax<-function(p,pos) #function checks to see if the player has landed on the income tax space
+  {
+  return(pos==5)
+}
+#Function to check if it is on the free parking position
+#takes a players data frame p and position pos
+#outputs nothing but identifies the tile location
+isFreeParking<-function(pos) #function checks to see if the player has landed on free parking
+  {
+  return(pos==21)
+}
+#Function to check if it is on the jail position
+#takes a players data frame p and position pos
+#outputs nothing but identifies the tile location
+isJail<-function(pos) #function checks to see if the player has landed on the jail tile
+  {
+    return(pos==11)
+}
+#Function to check if it is on the Go position
+#takes a players data frame p and position pos
+#outputs nothing but identifies the tile location
+isGo<-function(pos) #function checks to see if the player has landed on Go
+  {
+    return(pos==1)
+}
+#Function to check if it is on a utility position
+#takes a players data frame p and position pos
+#outputs nothing but identifies the tile location
+isUtility<-function(pos) #checks to see if player is on a utility, water works or electric company
+  {
+    return(pos==13|pos==29)
+}
+#Function to check if it is on a property position
+#takes a players data frame p and position pos
+#outputs nothing but identifies the tile location
+isProperty<-function(pos) #this function checks to see if the player is on a buyable property, not including utilities
+  {
+  return(board$prices[pos]>0 && pos!=13 && pos!=29) 
+} 
+#function to call other functions
+#takes a players data frame p
+#outputs updated data frames after calling every function
+takeAction<-function(p)
+  {
+    if(p$position==0)
+      {
+      p$position<-p$position+1
+      }
+    if(isProperty(p$position)) 
+      {
+      ownerid<-getOwner(board,p$position) #checks if someone owns the property by looking at the ownerID column of the board data frame
+      if(p$ID==ownerid) #this means the player already owns the property and their turn is over
+        {
+        return(p)
+        }
+      if(ownerid==0) #no one owns the property
+        {
+        if(p$money>=board$prices[p$position]) #check to see if player has enough money to buy property
+          {
+          p$money<-p$money-board$prices[p$position] #pay for property
+          board$ownerID[p$position]<<-p$ID #assign ownership of property in board data frame
+          return(p)
+          }
+        else
+          {
+          return(p) #if player doesn't have enough money to buy the property their turn is over
+          }
+        }
+      else if(isDone(p)) #if the player is out of the game we won't pay them
+          {
+          return(p)
+          }
+          else
+            {
+            p<-transferMoney(p, ownerid, board$rent[p$position])
+            return(p)
+            }
+         }
+      }
+    if(isUtility(p$position))
+      {
+      ownerid<-getOwner(board,p$position) #checks if someone owns the property by looking at the ownerID column of the board data frame
+      if(p$ID==ownerid) #this means the player already owns the property and their turn is over
+        {
+        return(p)
+        }
+      if(ownerid==0) #no one owns the property
+        {
+        if(p$money>=board$prices[p$position]) #check to see if player has enough money to buy property
+          {
+          p$money<-p$money-board$prices[p$position] #pay for property
+          board$ownerID[p$position]<<-p$ID #assign ownership of property in board data frame
+          return(p)
+          }
+        else
+          {
+          return(p) #if player doesn't have enough money to buy the property their turn is over
+          }
+        }
+        else
+        {
+        if(isDone(p)) #if the player is out of the game we won't pay them
+          {
+          return(p)
+          }
+          else
+            {
+            amount<-p$lastRollSum *4
+            p<-transferMoney(p, ownerid, amount) #rent is 4  times dice sum
+            return(p)
+            }
+         }
+      }
+    
+    if(isJail(p$position)) #turn is over if player lands on jail space
+      {
+      return(p)
+      }
+    if(isGo(p$position)) #turn is over if player lands on Go
+      {
+      return(p)
+      }
+    if(isFreeParking(p$position)) #turn is over if player lands on free parking
+      {
+      return(p)
+      }
+  if(isIncomeTax(p,p$position))
+    {
+    p$money<-p$money-200 #pays $200 tax
+    return(p)
+    }
+  if(isIncomeTax(p,p$position))
+    {
+    p$money<-p$money-75 #pays $75 tax
+    return(p)
+  }
+#function to change position
+#takes player data frame p and position pos
+#calls the take action function and returns the updated data frames
+move<-function(p, pos) #function that updates the position of the player
+  {
+	if(pos < p$position)
+	  {
+		p$money<-p$money + 50 #player passed go
+    }	
+	p$position<-pos
+	p<-takeAction(p)
+	return(p)
+}
+#function that gets the board position from adding the sum of the dice to current player position
+#takes a position pos and the diceroll dicesum
+#returns updated data frame after movign it. Once it reaches 40 the vector starts over at 1
+getDesination<-function(pos, dicesum) 
+    { 
+    if(pos==0)
+      {
+      pos<-pos+1
+      }
+    return((pos + dicesum) %% 40)
+    }
+#function that rolls dice by sampling 1-6
+#takes nothing
+#returns the number generated at the dice roll
+roll<-function() #function to roll dice just using sampling 
+    {
+    return(sample(1:6,1))
+    }
+#function checks if player taking a turn is out of money or not, parameter is a player data frame
+#takes a players data frame p
+#outputs nothing, but either continues or ends the game
+isDone<-function(p) 
+    { 
+	  return(p$money <= 0)
+    }
+#function that includes all other functions that one player will go through for a turn
+#Takes player's data frame p
+#returns updated data frames
+takeTurn<-function(p)
+{
+  if(isDone(p)){
+    return(p)
+  }
+    p$turn<-p$turn+1 #the player has enough money to take a turn, so turn column increases by 1
+    isTurnDone <- FALSE
+    rollCount <- 0 #keeps track of how many rolls
+    while(!isTurnDone) #loops to roll dice until thet do not get doubles
+      { 
+       rollCount<-rollCount+1
+       d1<-roll()
+       d2<-roll()
+       p$lastRollSum<-d1+d2
+       if(d1!=d2) #if if gets here, the player did not roll doubles and the loop will end after getDestination is called
+         {
+         isTurnDone = TRUE
+       }
+      newPos<-getDesination(p$position, dicesum<-d1+d2)
+      addToPlayerVector(p,newPos)
+      p<-move(p, newPos)
+    } 
+  return(p)
+}
+#loops through every players turn until a winner is delcared
+while(isGameOver()==FALSE)
+  {
+p1<-takeTurn(p1)
+isGameOver()
+p2<-takeTurn(p2)
+isGameOver()
+p3<-takeTurn(p3)
+isGameOver()
+p4<-takeTurn(p4)
+isGameOver()
+}
+#Calls the data frames to see final positions and money
+p1
+p2
+p3
+p4
+#calls the vectors so we can see all positions landed on
+p1vector
+p2vector
+p3vector
+p4vector
+```
+3. _Double Down_ Improve your system to incorporate going to jail, including the doubles-rolling condition. Which properties are landed on most frequently now? Has this changed dramatically from the previous system (that didn't account for jail)? Again, visualize this!
+```{R}
+#once we know the game has a winner, this function determines who that is and sets the global variable, winner, equal to the winner's player ID. The winner is the player with money left.
+#this function takes no inputs
+#Function outputs a winner either 1,2,3, or 4.
 getWinner<-function() #once we know the game has a winner, this function determines who that is and sets the global variable, winner, equal to the winner's player ID
   {
   if(p1$money!=0)
@@ -93,6 +446,9 @@ getWinner<-function() #once we know the game has a winner, this function determi
     winner<<-4
     }
   }
+#after each turn, check is we have a winner (only one player left with money).
+#Takes no inputs
+#doesn't output anything, but allows the game to continue or calls the getWinner function.
 isGameOver<-function() #after each turn, check is we have a winner (only one player left with money)
   {
   hasmoney<-0
@@ -119,6 +475,353 @@ isGameOver<-function() #after each turn, check is we have a winner (only one pla
     }
   return(FALSE)
   }
+#checks who the owner is and pays them when a player lands on a property.
+#takes a player ID and the amount owed
+#doesn't output anything, but changed the players dataframes to reflect money changes
+payPlayer<-function(id,amount) #checks who the owner is and pays them
+  {
+  if(id==1)
+    {
+    p1$money<<-p1$money+amount
+    }
+  if(id==2)
+    {
+    p2$money<<-p2$money+amount
+    }
+  if(id==3)
+    {
+    p3$money<<-p3$money+amount
+    }
+  if(id==4)
+    {
+    p4$money<<-p4$money+amount
+    }
+  }
+transferMoney<-function(p,to,amount)
+  {
+  if(p$money < amount) #if player doesn't have enough to pay full price, pay what they have
+    {
+    amount<-p$money
+    }
+  p$money<-p$money-amount #subtracting the amount from the player who is paying
+  payPlayer(to,amount)
+  return(p)
+  }
+getOwner<-function(board,pos) 
+  {
+  return(board$ownerID[pos])
+}
+addToPlayerVector<-function(p,pos) #checks what player is up and then updates location vectors
+  {
+    if(p$ID==1)
+      {
+      p1vector<<-append(p1vector,pos) #updates the player vector list of locations using tile number
+      loclogp1<<-append(loclogp1,tiles[pos]) #updates the player vector list of locations using tile name
+    }
+    if(p$ID==2)
+      {
+      p2vector<<-append(p2vector,pos)
+      loclogp2<<-append(loclogp2,tiles[pos])
+      }
+    if(p$ID==3)
+      {
+      p3vector<<-append(p3vector,p$position)
+      loclogp3<<-append(loclogp3,tiles[pos])
+      }
+   if(p$ID==4)
+      {
+      p4vector<<-append(p4vector,p$position)
+      loclogp4<<-append(loclogp4,tiles[pos])
+      }
+}
+isLuxuryTax<-function(p,pos) #function checks to see if the player has landed on the luxury tax space
+  {
+  return(pos==39)
+  }
+isIncomeTax<-function(p,pos) #function checks to see if the player has landed on the income tax space
+  {
+  return(pos==5)
+  }
+isFreeParking<-function(pos) #function checks to see if the player has landed on free parking
+  {
+  return(pos==21)
+  }
+isCommunityChest<-function(pos) #checks if they are on community chest
+  {
+    return(pos==3|pos==18|pos==34) 
+  }
+isChance<-function(pos) #checks if they are on chance
+  {
+   return(pos==8|pos==23|pos==37) 
+  }
+isGoToJail<-function(p,pos) #function checks to see if the player has landed on the go to jail tile
+  {
+    return(pos==31)
+  }
+isJail<-function(pos) #function checks to see if the player has landed on the jail tile
+  {
+    return(pos==11)
+  }
+isGo<-function(pos) #function checks to see if the player has landed on Go
+  {
+    return(pos==1)
+  }
+isUtility<-function(pos) #checks to see if player is on a utility, water works or electric company
+  {
+    return(pos==13|pos==29)
+  }
+isProperty<-function(pos) #this function checks to see if the player is on a buyable property, not including utilities
+  {
+  return(board$prices[pos]>0 && pos!=13 && pos!=29) 
+  } 
+takeAction<-function(p)
+  {
+    if(p$position==0)
+      {
+      p$position<-p$position+1
+      }
+    if(isProperty(p$position)) 
+      {
+      ownerid<-getOwner(board,p$position) #checks if someone owns the property by looking at the ownerID column of the board data frame
+      if(p$ID==ownerid) #this means the player already owns the property and their turn is over
+        {
+        return(p)
+        }
+      if(ownerid==0) #no one owns the property
+        {
+        if(p$money>=board$prices[p$position]) #check to see if player has enough money to buy property
+          {
+          p$money<-p$money-board$prices[p$position] #pay for property
+          board$ownerID[p$position]<<-p$ID #assign ownership of property in board data frame
+          return(p)
+          }
+        else
+          {
+          return(p) #if player doesn't have enough money to buy the property their turn is over
+          }
+        }
+      else
+        {
+        if(isDone(p)) #if the player is out of the game we won't pay them
+          {
+          return(p)
+          }
+          else
+            {
+            p<-transferMoney(p, ownerid, board$rent[p$position])
+            return(p)
+            }
+         }
+      }
+    if(isUtility(p$position))
+      {
+      ownerid<-getOwner(board,p$position) #checks if someone owns the property by looking at the ownerID column of the board data frame
+      if(p$ID==ownerid) #this means the player already owns the property and their turn is over
+        {
+        return(p)
+        }
+      if(ownerid==0) #no one owns the property
+        {
+        if(p$money>=board$prices[p$position]) #check to see if player has enough money to buy property
+          {
+          p$money<-p$money-board$prices[p$position] #pay for property
+          board$ownerID[p$position]<<-p$ID #assign ownership of property in board data frame
+          return(p)
+          }
+        else
+          {
+          return(p) #if player doesn't have enough money to buy the property their turn is over
+          }
+        }
+        else
+        {
+        if(isDone(p)) #if the player is out of the game we won't pay them
+          {
+          return(p)
+          }
+          else
+            {
+            amount<-p$lastRollSum *4
+            p<-transferMoney(p, ownerid, amount) #rent is 4  times dice sum
+            return(p)
+            }
+         }
+      }
+    if(isGoToJail(p,p$position))
+      {
+      p$money<-p$money-50
+      p$position<-11
+      return(p)
+      }
+    if(isJail(p$position)) #turn is over if player lands on jail space
+      {
+      return(p)
+      }
+    if(isGo(p$position)) #turn is over if player lands on Go
+      {
+      return(p)
+      }
+    if(isFreeParking(p$position)) #turn is over if player lands on free parking
+      {
+      return(p)
+      }
+  if(isIncomeTax(p,p$position))
+    {
+    p$money<-p$money-200 #pays $200 tax
+    return(p)
+    }
+  if(isIncomeTax(p,p$position))
+    {
+    p$money<-p$money-75 #pays $75 tax
+    return(p)
+    }
+    return(p)
+  }
+move<-function(p, pos) #function that updates the position of the player
+  {
+	if(pos < p$position)
+	  {
+		p$money<-p$money + 50 #player passed go
+    }	
+	p$position<-pos
+	p<-takeAction(p)
+	return(p)
+}
+getDesination<-function(pos, dicesum) #function that gets the board position from adding the sum of the dice to current player position
+    { 
+    if(pos==0)
+      {
+      pos<-pos+1
+      }
+    return((pos + dicesum) %% 40)
+    }
+
+roll<-function() #function to roll dice just using sampling 
+    {
+    return(sample(1:6,1))
+    }
+
+isDone<-function(p) #function checks if player taking a turn is out of money or not, parameter is a player data frame
+    { 
+	  return(p$money <= 0)
+    }
+  
+takeTurn<-function(p)#function that includes all other functions that one player will go through for a turn
+{
+  if(isDone(p)){
+    return(p)
+  }
+    p$turn<-p$turn+1 #the player has enough money to take a turn, so turn column increases by 1
+    isTurnDone <- FALSE
+    rollCount <- 0 #keeps track of how many rolls
+    while(!isTurnDone) #loops to roll dice until thet do not get doubles
+      { 
+       rollCount<-rollCount+1
+       d1<-roll()
+       d2<-roll()
+       p$lastRollSum<-d1+d2
+       if(d1==d2 & rollCount==3) #this means the player has rolled doubles 3 times and is going to jail
+         {
+         p$money<-p$money-50 #to get out of jail player pays a $50 fee
+         p$position<-11 #player goes to jail, tile 11
+         return(p) #player's turn is over
+       }
+       if(d1!=d2) #if if gets here, the player did not roll doubles and the loop will end after getDestination is called
+         {
+         isTurnDone = TRUE
+       }
+      newPos<-getDesination(p$position, dicesum<-d1+d2)
+      addToPlayerVector(p,newPos)
+      p<-move(p, newPos)
+    } 
+  return(p)
+}
+
+while(isGameOver()==FALSE)
+  {
+p1<-takeTurn(p1)
+isGameOver()
+p2<-takeTurn(p2)
+isGameOver()
+p3<-takeTurn(p3)
+isGameOver()
+p4<-takeTurn(p4)
+isGameOver()
+}
+p1
+p2
+p3
+p4
+
+p1game1<-p1vector
+p2game1<-p2vector
+p3game1<-p3vector
+p4game1<-p4vector
+```
+
+
+4. _Take a Chance_ Incorporate the movement cards into your system. You can ignore the effects of non-movement cards, but not their existence! Which properties are landed on most frequently now? Has this changed dramatically from the previous system (that didn't account for Chance)? Again, visualize this!
+
+Code is under Question 5, this is visualization for all three simulations.
+```{R}
+
+```
+5. _Play a Game_ Extend your system to allow for up to 4 players to "play" the game. You may choose a reasonable starting board and player money level (so, you don't have to buy properties). Include payments between players, payments to the bank, and payments from the bank (there are several cards that will effect these that you should account for). You do not need to consider mortgaging properties (so a player loses when their liquid cash has run out). How long do games typically last given your starting board and money level? How does this change if money paid to the bank is placed in "Free Parking" and awarded to players landing on that space?
+```{R}
+#once we know the game has a winner, this function determines who that is and sets the global variable, winner, equal to the winner's player ID. The winner is the player with money left.
+#this function takes no inputs
+#Function outputs a winner either 1,2,3, or 4.
+getWinner<-function() #once we know the game has a winner, this function determines who that is and sets the global variable, winner, equal to the winner's player ID
+  {
+  if(p1$money!=0)
+    {
+    winner<<-1
+    }
+  if(p2$money!=0)
+    {
+    winner<<-2
+    }
+  if(p3$money!=0)
+    {
+    winner<<-3
+    }
+  if(p4$money!=0)
+    {
+    winner<<-4
+    }
+  }
+#after each turn, check is we have a winner (only one player left with money).
+#Takes no inputs
+#doesn't output anything, but allows the game to continue or calls the getWinner function.
+isGameOver<-function() #after each turn, check is we have a winner (only one player left with money)
+  {
+  hasmoney<-0
+  if(p1$money>0)
+    {
+    hasmoney<-hasmoney+1
+    }
+  if(p2$money>0)
+    {
+    hasmoney<-hasmoney+1
+    }
+  if(p3$money>0)
+    {
+    hasmoney<-hasmoney+1
+    }
+  if(p4$money>0)
+    {
+    hasmoney<-hasmoney+1
+    }
+  if(hasmoney==1) #if has money equals one, only one person has money left, therefore, they are the winner
+    {
+    getWinner() 
+    return(TRUE)
+    }
+  return(FALSE)
+  }
+#checks who the owner is and pays them when a player lands on a property.
+#takes a player ID and the amount owed
+#doesn't output anything, but changed the players dataframes to reflect money changes
 payPlayer<-function(id,amount) #checks who the owner of the property is and pays them
   {
   if(id==1)
