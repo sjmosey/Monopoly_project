@@ -1,0 +1,85 @@
+---
+title: "STAT 345 Final Project Options"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+font: 12pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(ggplot2)
+library(reshape2)
+library(cowplot)
+library(dplyr)
+library(viridisLite)
+
+freq_vect <- c(p1vector, p2vector, p3vector, p4vector, )
+freq_data <- as.data.frame(table(freq_vect))
+```
+
+```{r}
+board_freq <- rnorm(121)
+  board_freq[1] <- freq_data$Freq[11]
+  board_freq[2] <- freq_data$Freq[10]
+  board_freq[3] <- freq_data$Freq[9]
+  board_freq[4] <- freq_data$Freq[8]
+  board_freq[5] <- freq_data$Freq[7]
+  board_freq[6] <- freq_data$Freq[6]
+  board_freq[7] <- freq_data$Freq[5]
+  board_freq[8] <- freq_data$Freq[4]
+  board_freq[9] <- freq_data$Freq[3]
+  board_freq[10] <- freq_data$Freq[2]
+  board_freq[11] <- freq_data$Freq[1]
+  board_freq[12] <- freq_data$Freq[12]
+  board_freq[22] <- freq_data$Freq[40]
+  board_freq[23] <- freq_data$Freq[13]
+  board_freq[33] <- freq_data$Freq[39]
+  board_freq[34] <- freq_data$Freq[14]
+  board_freq[44] <- freq_data$Freq[38]
+  board_freq[45] <- freq_data$Freq[15]
+  board_freq[55] <- freq_data$Freq[37]
+  board_freq[56] <- freq_data$Freq[16]
+  board_freq[66] <- freq_data$Freq[36]
+  board_freq[67] <- freq_data$Freq[17]
+  board_freq[77] <- freq_data$Freq[35]
+  board_freq[78] <- freq_data$Freq[18]
+  board_freq[88] <- freq_data$Freq[34]
+  board_freq[89] <- freq_data$Freq[19]
+  board_freq[99] <- freq_data$Freq[33]
+  board_freq[100] <- freq_data$Freq[20]
+  board_freq[110] <- freq_data$Freq[32]
+  board_freq[111] <- freq_data$Freq[21]
+  board_freq[112] <- freq_data$Freq[22]
+  board_freq[113] <- freq_data$Freq[23]
+  board_freq[114] <- freq_data$Freq[24]
+  board_freq[115] <- freq_data$Freq[25]
+  board_freq[116] <- freq_data$Freq[26]
+  board_freq[117] <- freq_data$Freq[27]
+  board_freq[118] <- freq_data$Freq[28]
+  board_freq[119] <- freq_data$Freq[29]
+  board_freq[120] <- freq_data$Freq[30]
+  board_freq[121] <- freq_data$Freq[31]
+```
+
+
+```{r}
+board_alpha <- c(.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7)
+
+board_df <- data.frame(x=rep(1:11, times=11), y=rep(1:11, each=11), board_freq) 
+
+p <- ggplot(board_df, aes(x=x, y=y, fill=board_freq)) + geom_tile(alpha=board_alpha) + theme_void() + coord_equal() + scale_fill_gradient2(low = "white", mid = "yellow", high = "darkred") + labs(fill = "Tile Frequency") + theme(legend.position = c(1.2, .6)) 
+
+board <- system.file("monopoly_board.jpg")
+
+
+
+ggdraw() + 
+
+ draw_image("monopoly_board.jpg", scale=1.01, hjust=.0025, vjust=-.005) +
+
+draw_plot(p)
+```
