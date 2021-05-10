@@ -11,13 +11,17 @@ font: 12pt
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r}
+library(ggplot2)
+library(reshape2)
+library(cowplot)
+library(dplyr)
+library(viridisLite)
+
 freq_vect <- c(p1vector, p2vector, p3vector, p4vector, )
 freq_data <- as.data.frame(table(freq_vect))
 ```
 
 ```{r}
-#for(i in 1:40){
-
 board_freq <- rnorm(121)
   board_freq[1] <- freq_data$Freq[11]
   board_freq[2] <- freq_data$Freq[10]
@@ -59,52 +63,15 @@ board_freq <- rnorm(121)
   board_freq[119] <- freq_data$Freq[29]
   board_freq[120] <- freq_data$Freq[30]
   board_freq[121] <- freq_data$Freq[31]
-#}
 ```
 
 
 ```{r}
-library(ggplot2)
-library(reshape2)
-
-#board <- matrix(1:121, nrow=11)
-#board_x <- 1:11
-#board_y <- 1:11
-#value <- rnorm(121)
-#board_df <- data.frame(x=rep(1:11, times=11), y=rep(1:11, each=11), value = c(0,2,2,0,2,0,0,1,0,1,0,3,0,0,0,0,0,0,0,0,0,8,0,))
-
-#assign an id to plot rows to y-axis
-#board$id <- 1:nrow(board)
-
-#reshape to long
-#m_board <- melt(board, id.var="id")
-
-
-#board_plot <- ggplot(board_df, aes(x=x, y=y,fill=value)) + geom_tile()
-
-#board_plot
-
-library(cowplot)
-library(dplyr)
-library(viridisLite)
-
-
-
-
 board_alpha <- c(.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,0,0,0,0,0,0,0,0,0,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7)
-#c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 
-board_df <- data.frame(x=rep(1:11, times=11), y=rep(1:11, each=11), board_freq) #c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1))
-#c(0,2,2,0,2,0,0,1,0,1,0,3,NA,NA,NA,NA,NA,NA,NA,NA,NA,8,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,0,3))
+board_df <- data.frame(x=rep(1:11, times=11), y=rep(1:11, each=11), board_freq) 
 
-
-
-#p <- ggplot(board_df, aes(x=x, y=y, fill=value)) + geom_tile(alpha=c(rep(1, 120), .6), height = 1.5) + theme_void()
 p <- ggplot(board_df, aes(x=x, y=y, fill=board_freq)) + geom_tile(alpha=board_alpha) + theme_void() + coord_equal() + scale_fill_gradient2(low = "white", mid = "yellow", high = "darkred") + labs(fill = "Tile Frequency") + theme(legend.position = c(1.2, .6)) 
-#+ scale_fill_continuous(limits=c(0, 1000), breaks=seq(0,1000,by=250))
-#scale_fill_continuous(type = "viridis")
-#+ scale_fill_manual(values = c("white", "darkred"))
-
 
 board <- system.file("monopoly_board.jpg")
 
@@ -115,6 +82,4 @@ ggdraw() +
  draw_image("monopoly_board.jpg", scale=1.01, hjust=.0025, vjust=-.005) +
 
 draw_plot(p)
-#coord_fixed(ratio = 1.2)
-
 ```
