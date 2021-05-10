@@ -10,18 +10,21 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 #creating the board
 tiles <- c("GO", "Mediterranean Avenue", "Community Chest", "Baltic Avenue", "Income Tax", "Reading Railroad", "Oriental Avenue","Chance","Vermont Avenue", "Connecticut Avenue", "Jail", "St. Charles Place", "Electric Company", "States Avenue", "Virginia Avenue","Pennsylvania Railroad", "St. James Place", "Community Chest","Tennessee Avenue","New York Avenue","Free Parking","Kentucky Avenue","Chance","Indiana Avenue","Illinois Avenue","B. & O. Railroad","Atlantic Avenue","Ventnor Avenue", "Water Works", "Marvin Gardens","Go To Jail","Pacific Avenue","North Carolina Avenue", "Community Chest", "Pennsylvania Avenue","Short Line", "Chance","Park Place", "Luxury Tax", "Boardwalk")
+#holds prices of the properties
 prices <- c("0","60","0","60","0","200","100","0","100","120","0","140","150","140","160","200","180","0","180","200","0","220","0","220","240","200","260","260","150","280","0","300","300","0","320","200","0","350","0","400")
 prices <- as.numeric(prices)
 #For rent that depends on 4 times the dice roll we preset the dice roll to be 7 as that is the most common 2 sided dice roll.
 rent <- c("0","2","0","4","0","25","6","0","6","8","0","10","28","10","12","25","14","0","14","16","0","18","0","18","20","25","22","22","28","24","0","26","26","0","28","28","0","35","0","50")
 rent <- as.numeric(rent)
+#Creates owner ID vector initialized with 0 40 times.
 ownerID<-rep(c(0),times=40)
+#compiles the tiles, prices, and rent into a data frame. Asigns them numbers 1-40. Adds in the owner ID column to be appended later.
 board <- data.frame(numeric_tile = 1:40, tiles, prices,rent,ownerID)
-board
 
-#creating deck of chance cards
-chance <- c("Advance to go (collect $200).", "Advance to Illinois Ave - If you pass Go, collect $200.", "Advance to St. Charles Place - If you pass Go, collect $200.", "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.", "Bank pays you dividend of $50.", "Get Out of Jail Free.", "Go Back 3 Spaces.", "Go to Jail-Go directly to Jail-Do not pass Go, do not collect $200.", "Make general repairs on all your property-For each house pay $25-For each hotel $100.","Pay poor tax of $15","Take a trip to Reading Railroad–If you pass Go, collect $200.","Take a walk on the Boardwalk–Advance token to Boardwalk","You have been elected Chairman of the Board–Pay each player $50","Your building and loan matures—Collect $150","You have won a crossword competition—Collect $100")
-chancecards <- data.frame(card_number = 1:16, chance)
+
+#creating deck of chance cards-removed get out of jail free and hotel related cards
+chance <- c("Advance to go (collect $200).", "Advance to Illinois Ave - If you pass Go, collect $200.", "Advance to St. Charles Place - If you pass Go, collect $200.", "Advance to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the nearest Railroad and pay owner twice the rental to which he/she is otherwise entitled. If Railroad is unowned, you may but it from the Bank.", "Bank pays you dividend of $50.", "Go Back 3 Spaces.", "Go to Jail-Go directly to Jail-Do not pass Go, do not collect $200.","Pay poor tax of $15","Take a trip to Reading Railroad–If you pass Go, collect $200.","Take a walk on the Boardwalk–Advance token to Boardwalk","You have been elected Chairman of the Board–Pay each player $50","Your building and loan matures—Collect $150","You have won a crossword competition—Collect $100")
+chancecards <- data.frame(card_number = 1:14, chance)
 #creating deck of community chest. Removed get out of jail free card and hotel/ house assessment cards
 chest <- c("Advance to Go (Collect $200).","Bank error in your favor—Collect $200.","Doctor's fee—Pay $50.","From sale of stock you get $50.","Go to Jail–Go directly to jail–Do not pass Go–Do not collect $200.","Grand Opera Night—Collect $50 from every player for opening night seats.","Holiday Fund matures—Receive $100.","Income tax refund–Collect $20.","Life insurance matures–Collect $100.","Pay hospital fees of $100.","Pay school fees of $150.","Receive from services $25.","You have won second prize in a beauty contest–Collect $10.","You inherit $100.")
 chestcards <- data.frame(card_number = 1:14, chest)
@@ -30,15 +33,20 @@ winner<-0 #this will be the global variable that stores the game winner's player
 
 
 ```{r}
+#presets the players positions to 1
 position<-1
+#Presets they players starting money to $500
 money<-500
-lastRollSum<-0 #will need if player lands on utility (they owe 4x amount of dice)
+#will need if player lands on utility (they owe 4x amount of dice)
+lastRollSum<-0 
 ID<-0
-turn<-0 #this will keep track of how many turns each player got to take
+#this will keep track of how many turns each player got to take. Gives each player a data frame with their ID, turn number, position, money, and last roll
+turn<-0
 p1<- data.frame(ID,turn,position, money,lastRollSum)
 p2<- data.frame(ID,turn,position, money, lastRollSum)
 p3<- data.frame(ID,turn,position, money,lastRollSum)
 p4<- data.frame(ID,turn,position, money,lastRollSum)
+#Identifies IDs for each player
 p1$ID<-1
 p2$ID<-2
 p3$ID<-3
@@ -59,7 +67,10 @@ loclogp4 = as.vector(board$tiles[1])
 
 
 ```{r}
-getWinner<-function() #once we know the game has a winner, this function determines who that is and sets the global variable, winner, equal to the winner's player ID
+#once we know the game has a winner, this function determines who that is and sets the global variable, winner, equal to the winner's player ID. The winner is the player with money left.
+#this function takes no inputs
+#Function outputs a winner either 1,2,3, or 4.
+getWinner<-function() 
   {
   if(p1$money!=0)
     {
@@ -77,8 +88,11 @@ getWinner<-function() #once we know the game has a winner, this function determi
     {
     winner<<-4
     }
-  }
-isGameOver<-function() #after each turn, check is we have a winner (only one player left with money)
+}
+#after each turn, check is we have a winner (only one player left with money).
+#Takes no inputs
+#doesn't output anything, but allows the game to continue or calls the getWinner function.
+isGameOver<-function() 
   {
   hasmoney<-0
   if(p1$money>0)
@@ -103,7 +117,10 @@ isGameOver<-function() #after each turn, check is we have a winner (only one pla
     return(TRUE)
     }
   return(FALSE)
-  }
+}
+#checks who the owner is and pays them when a player lands on a property.
+#takes a player ID and the amount owed
+#doesn't output anything, but changed the players dataframes to reflect money changes
 payPlayer<-function(id,amount) #checks who the owner is and pays them
   {
   if(id==1)
@@ -122,7 +139,11 @@ payPlayer<-function(id,amount) #checks who the owner is and pays them
     {
     p4$money<<-p4$money+amount
     }
-  }
+}
+#Function for when players don't have enough money
+#Takes a player(p), to which is what player, and the amount needed (only enough to return their money to 0)
+#Doesn't outpout anything but updats the player's data frame with enough money
+
 transferMoney<-function(p,to,amount)
   {
   if(p$money < amount) #if player doesn't have enough to pay full price, pay what they have
@@ -132,11 +153,15 @@ transferMoney<-function(p,to,amount)
   p$money<-p$money-amount #subtracting the amount from the player who is paying
   payPlayer(to,amount)
   return(p)
-  }
+}
+#Function to check the owner of a spot by looking at the owner ID column in the board data frame.
+#takes the board data frame and a position (pos)
+#Returns the owner of the spot
 getOwner<-function(board,pos) 
   {
   return(board$ownerID[pos])
 }
+#Function for randomly drawing a 
 drawChestCard <- function(p)
   {
     x <- sample(chest,1, replace = TRUE)
